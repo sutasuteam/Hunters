@@ -1196,6 +1196,188 @@ this,
 
 </div>
 
+<div id="completeProfileModal" class="complete-modal hidden">
+
+  <div class="complete-card">
+
+      <button onclick="closeCompleteProfileModal()" class="close-complete">
+          ✕
+      </button>
+
+      <h2>Complete Your Hunter Profile</h2>
+
+      <p class="complete-desc">
+          Your Canopy Wallet has been created.<br>
+          Complete your profile to continue.
+      </p>
+
+      <!-- COVER -->
+
+      <label  class="section-title">
+          Cover
+      </label>
+
+      <label
+          for="completeCoverInput"
+          class="cover-upload"
+      >
+
+          <img
+              id="completeCoverPreview"
+              class="cover-preview hidden"
+          >
+
+          <div id="coverPlaceholder">
+
+              
+
+              <div class="upload-title">
+                  No cover selected
+              </div>
+
+              <div class="upload-sub">
+                  Recommended size : 1500 × 500
+              </div>
+
+              <span class="upload-btn">
+                  Upload Cover
+              </span>
+
+          </div>
+
+      </label>
+
+      <input
+          id="completeCoverInput"
+          type="file"
+          accept="image/*"
+          hidden
+      >
+
+      <!-- AVATAR -->
+
+      <label class="section-title">
+          Avatar
+      </label>
+
+      <div class="avatar-row">
+
+          <div class="avatar-box">
+
+              <img
+                  id="completeAvatarPreview"
+                  class="avatar-preview hidden"
+              >
+
+              <div
+                  id="avatarDefault"
+                  class="avatar-default"
+              >
+                  H
+              </div>
+
+              <label
+                  for="completeAvatarInput"
+                  class="camera-btn"
+              >
+                  📷
+              </label>
+
+          </div>
+
+          <label
+              for="completeAvatarInput"
+              class="avatar-upload"
+          >
+
+        
+
+              <div class="upload-title">
+                  No avatar selected
+              </div>
+
+              <span class="upload-btn">
+                  Upload Avatar
+              </span>
+
+          </label>
+
+      </div>
+
+      <input
+          id="completeAvatarInput"
+          type="file"
+          accept="image/*"
+          hidden
+      >
+
+      <!-- DISPLAY NAME -->
+
+      <label class="section-title">
+          Display Name
+      </label>
+
+      <input
+          id="completeName"
+          class="complete-input"
+          placeholder="Enter your display name"
+      >
+
+      <!-- USERNAME -->
+
+      <label class="section-title">
+          Username
+      </label>
+
+      <div class="username-box">
+
+          <span>@</span>
+
+          <input
+              id="completeUsername"
+              placeholder="Enter your username"
+          >
+
+      </div>
+
+      <small class="helper">
+          This will be your unique username
+      </small>
+
+      <!-- BIO -->
+
+      <label class="section-title">
+          Bio
+      </label>
+
+      <textarea
+          id="completeBio"
+          class="complete-textarea"
+          maxlength="160"
+          placeholder="Tell others about yourself..."
+      ></textarea>
+
+      <div class="bio-footer">
+
+          <span>Max 160 characters</span>
+
+          <span id="bioCounter">
+              0/160
+          </span>
+
+      </div>
+
+      <button
+          class="save-profile-btn"
+          onclick="finishProfileSetup()"
+      >
+          Save Profile
+      </button>
+
+  </div>
+
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
 
 <script>
@@ -1286,6 +1468,153 @@ if(user){
 loadWhoToFollow();
 
 });
+
+async function finishProfileSetup(){
+
+try{
+
+  const ethAddress = userAddress;
+
+    const name =
+    document
+    .getElementById("completeName")
+    .value
+    .trim();
+
+    const username =
+    document
+    .getElementById("completeUsername")
+    .value
+    .trim();
+
+    const bio =
+    document
+    .getElementById("completeBio")
+    .value
+    .trim();
+
+    // Update profile
+
+    await fetch(
+        "http://localhost:3001/api/update-profile",
+        {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+              ethAddress,
+
+                name,
+
+                username,
+
+                bio
+
+            })
+
+        }
+    );
+
+    // Upload avatar
+
+    if(document.getElementById("completeAvatarInput").files[0]){
+
+        const form = new FormData();
+
+        form.append(
+            "photo",
+            document.getElementById("completeAvatarInput").files[0]
+        );
+
+        form.append(
+            "ethAddress",
+            ethAddress
+        );
+
+        await fetch(
+            "http://localhost:3001/api/upload-avatar",
+            {
+                method:"POST",
+                body:form
+            }
+        );
+
+    }
+
+    // Upload cover
+
+    if(document.getElementById("completeCoverInput").files[0]){
+
+        const form = new FormData();
+
+        form.append(
+            "cover",
+            document.getElementById("completeCoverInput").files[0]
+        );
+
+        form.append(
+            "ethAddress",
+            ethAddress
+        );
+
+        await fetch(
+            "http://localhost:3001/api/upload-cover",
+            {
+                method:"POST",
+                body:form
+            }
+        );
+
+    }
+
+    // Reload profile terbaru
+
+    const res =
+    await fetch(
+        `http://localhost:3001/api/user/${ethAddress}`
+    );
+
+    const data =
+    await res.json();
+
+    localStorage.setItem(
+
+        "hunter_user_" + ethAddress,
+
+        JSON.stringify(data.user)
+
+    );
+
+    document
+    .getElementById("completeProfileModal")
+    .classList.add("hidden");
+
+    loadUserProfile();
+
+    updateWalletUI(
+        data.user.canopyAddress
+    );
+
+    alert("Profile completed!");
+
+}
+catch(err){
+
+    console.error(err);
+
+    alert("Failed to save profile");
+
+}
+
+}
+
+
+
 
 function renderFeed(list, target) {
 
@@ -1663,6 +1992,15 @@ try{
     alert(err.message);
 
 }
+
+}
+
+
+function closeCompleteProfile(){
+
+document
+    .getElementById("completeProfileModal")
+    .classList.add("hidden");
 
 }
 
@@ -2080,6 +2418,58 @@ document
     .classList.remove("hidden");
 
 }
+
+document
+.getElementById("completeAvatarInput")
+.addEventListener("change", function (e) {
+
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function (ev) {
+
+        document.getElementById("completeAvatarPreview").src = ev.target.result;
+
+        document.getElementById("completeAvatarPreview")
+            .classList.remove("hidden");
+
+        document.getElementById("avatarDefault")
+            .classList.add("hidden");
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
+
+document
+.getElementById("completeCoverInput")
+.addEventListener("change", function (e) {
+
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function (ev) {
+
+        document.getElementById("completeCoverPreview").src = ev.target.result;
+
+        document.getElementById("completeCoverPreview")
+            .classList.remove("hidden");
+
+        document.getElementById("coverPlaceholder")
+            .classList.add("hidden");
+
+    };
+
+    reader.readAsDataURL(file);
+
+});
 
 async function loadMyNFTs() {
 
@@ -2957,6 +3347,9 @@ console.log(
   data
 );
 
+console.log("isNewUser =", data.isNewUser);
+console.log("needProfile =", data.needProfile);
+
 if(!data.success){
 
   alert(
@@ -2969,6 +3362,20 @@ if(!data.success){
 
 const user =
 data.user;
+
+if(data.needProfile){
+
+document
+    .getElementById("auth-modal")
+    ?.classList.add("hidden");
+
+document
+    .getElementById("completeProfileModal")
+    ?.classList.remove("hidden");
+
+return;
+
+}
 
 if(!user){
 
@@ -3016,21 +3423,35 @@ localStorage.setItem(
   userAddress
 );
 
+// kalau user baru
+if(data.isNewUser){
+
+    document
+    .getElementById("auth-modal")
+    .classList.add("hidden");
+
+    document
+    .getElementById("completeProfileModal")
+    .classList.remove("hidden");
+
+    return;
+}
+
+// kalau user lama
+
 document
 .getElementById("auth-modal")
-?.classList.add("hidden");
+.classList.add("hidden");
 
 loadUserProfile();
 
 updateWalletUI(
-  user.canopyAddress
+    user.canopyAddress
 );
 
-// Simpan canopy address dari data user server
 if(user.canopyAddress){
-  canopyAddress = user.canopyAddress;
+    canopyAddress = user.canopyAddress;
 }
-
 }catch(err){
 
   loadWhoToFollow();
@@ -3165,6 +3586,14 @@ try{
     alert("Tidak dapat terhubung ke server.");
 
 }
+
+}
+
+function closeCompleteProfileModal(){
+
+document
+    .getElementById("completeProfileModal")
+    .classList.add("hidden");
 
 }
 

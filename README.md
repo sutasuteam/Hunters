@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://sutasuteam.github.io/Hunters/images/logo-hunters.png" width="220" alt="Hunters Logo">
+  <img src="https://sutasuteam.github.io/Hunters/Logo/Hunters.png" width="220" alt="Hunters Logo">
 </p>
 
 <h1 align="center">Hunters</h1>
@@ -10,122 +10,123 @@ A decentralized social platform built on the Canopy Network.
 
 ---
 
-# Overview
+# One-line Pitch
 
-Hunters is a decentralized social application powered by the **Canopy Network**.
+**Hunters is a decentralized Social-Fi platform on Canopy where users own their identity, reputation, social assets, and NFTs through on-chain transactions.**
 
-The project demonstrates how a modern web application can integrate directly with Canopy while providing familiar Web2-style user experience.
+---
 
-Core integrations include:
+# Why Hunters?
 
-- Canopy Wallet creation
-- MetaMask authentication
+Hunters explores how social interactions can become native blockchain transactions.
+
+Instead of storing identity and social activity entirely off-chain, Hunters integrates directly with the Canopy Network to demonstrate a decentralized Social-Fi ecosystem.
+
+Every user receives a Canopy wallet and interacts with the blockchain through custom plugin transactions.
+
+---
+
+# Social-Fi Components
+
+Hunters includes several Social-Fi concepts:
+
+- ✅ Decentralized Identity
+- ✅ On-chain User Profiles
+- ✅ NFT-powered Social Assets
+- ✅ Community Content
+- ✅ Social Reputation Foundation
+- ✅ User-owned Wallet Identity
+- ✅ Token Economy
+- ✅ Blockchain-native Transactions
+
+---
+
+# Canopy Integration
+
+Hunters is **not** a standalone web application.
+
+It communicates directly with a local Canopy blockchain.
+
+The application architecture consists of:
+
+```
+Frontend
+      │
+      ▼
+Express Backend
+      │
+      ▼
+Custom Go Plugin
+      │
+      ▼
+Canopy RPC
+(50002 / 50003)
+      │
+      ▼
+Local Canopy Chain
+```
+
+The backend communicates with the Canopy node using RPC while custom transaction types are implemented inside the Go plugin.
+
+---
+
+# Custom Transactions
+
+Hunters extends Canopy through custom transaction types.
+
+Current plugin interactions include:
+
+- Wallet generation
 - Token creation
 - NFT minting
-- On-chain profile management
-- RPC integration
+- Asset transfers
+- On-chain profile operations
+
+These transactions are executed through the Go plugin and submitted to the local Canopy chain.
+
+---
+
+# RPC Usage
+
+Hunters interacts directly with the local Canopy RPC.
+
+```
+RPC Port : 50002
+REST Port: 50003
+```
+
+The frontend never uses mocked blockchain data.
+
+Every blockchain action is forwarded through the backend and executed on the local Canopy chain.
+
+---
+
+# Built with Canopy Template
+
+Hunters is built using the official **Canopy Go Template**.
+
+The project extends the template by adding:
+
 - Custom signer service
-
----
-
-# Project Structure
-
-```
-canopy-main/
-│
-├── public/
-├── routes/
-├── utils/
-├── plugin/
-├── data/
-├── server.js
-├── package.json
-└── .env
-```
-
----
-
-# Requirements
-
-Before running Hunters, make sure you have installed:
-
-- Go
-- Node.js
-- npm
-- Canopy CLI
-- Git
-
----
-
-# Setup
-
-## 1. Clone repository
-
-```bash
-git clone https://github.com/sutasuteam/Hunters.git
-
-cd Hunters
-```
-
----
-
-## 2. Install dependencies
-
-```bash
-npm install
-```
-
----
-
-## 3. Configure Environment
-
-Create `.env`
-
-Example:
-
-```env
-PORT=3001
-
-CANOPY_EXE=/path/to/canopy
-
-CANOPY_PASSWORD=your_password
-
-CANOPY_SIGNER_ADDRESS=xxxxxxxxxxxxxxxx
-
-TEST_ADDRESS=
-
-TEST_PUBLIC_KEY=
-
-TEST_PRIVATE_KEY=
-```
+- Social application backend
+- NFT module
+- Token module
+- Wallet onboarding
+- Frontend integration
 
 ---
 
 # Running Hunters
 
-Hunters requires **three running processes**.
-
----
-
-## Step 1 — Start Canopy
-
-Start the Canopy blockchain normally.
-
-Example
+## 1. Start Canopy
 
 ```bash
 go run ./cmd/cli start
 ```
 
-or
-
-```bash
-canopy start
-```
-
 ---
 
-## Step 2 — Enable Go Plugin
+## 2. Enable Go Plugin
 
 Open
 
@@ -133,47 +134,38 @@ Open
 config/config.json
 ```
 
-Change
+Set
 
 ```json
-"plugin": ""
+{
+  "plugin": "go"
+}
 ```
 
-to
-
-```json
-"plugin": "go"
-```
-
-Restart the Canopy node after saving.
+Restart the node.
 
 ---
 
-## Step 3 — Start Hunters
+## 3. Start Hunters Backend
 
-Open another terminal
+Open another terminal.
 
 ```bash
+npm install
+
 npm run dev
 ```
 
-This starts:
-
-- Express Backend
-- Frontend
-- Signer Service
-
 ---
 
-## Step 4 — Open Hunters
-
-Visit
+## 4. Open Hunters
 
 ```
 http://127.0.0.1:8080/
 ```
 
 ---
+
 
 # Architecture
 
@@ -198,62 +190,29 @@ http://127.0.0.1:8080/
     Canopy Network
 ```
 
----
-
-# Main Components
-
-## Frontend
-
-- HTML
-- CSS
-- JavaScript
-
----
-
-## Backend
-
-- Express
-- Multer
-- Local JSON Database
-
----
-
-## Blockchain
-
-- Canopy Network
-- Canopy CLI
-- RPC
-- Signer Service
-
----
-
-# Development Notes
-
-Hunters currently stores application data locally using JSON files.
+# Development Flow
 
 ```
-data/users.json
-data/posts.json
-data/minted-nfts.json
+Start Canopy
+        │
+        ▼
+Enable Go Plugin
+        │
+        ▼
+Run npm run dev
+        │
+        ▼
+Open Frontend
+        │
+        ▼
+MetaMask Login
+        │
+        ▼
+Create Canopy Wallet
+        │
+        ▼
+Interact with Canopy RPC
+        │
+        ▼
+Execute Custom Transactions
 ```
-
-These can later be replaced by a persistent database.
-
----
-
-# Technologies
-
-- Node.js
-- Express
-- JavaScript
-- HTML
-- CSS
-- Canopy Network
-- MetaMask
-- Ethers.js
-
----
-
-# License
-
-MIT

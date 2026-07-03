@@ -736,56 +736,93 @@ function createCanopyWallet() {
 /* =========================
    LOGIN
 ========================= */
-
-app.post("/api/login", (req,res)=>{
+app.post("/api/login", (req, res) => {
 
   try {
 
-    const { ethAddress } = req.body;
+      const { ethAddress } = req.body;
 
-    let users = loadDB();
+      if (!ethAddress) {
+          return res.status(400).json({
+              success:false,
+              error:"ethAddress required"
+          });
+      }
 
-    let user = users.find(
-      u => u.ethAddress.toLowerCase() === ethAddress.toLowerCase()
-    );
+      const users = loadDB();
 
-    if(!user){
+      let isNewUser = false;
 
-      const canopyWallet = createCanopyWallet();
-    
-      user = {
-        ethAddress,
-        canopyAddress: canopyWallet.address,
-    
-        name: "",
-        username: "",
-        bio: "",
-    
-        photo: "",
-        cover: ""
-      };
-    
-      users.push(user);
-      saveDB(users);
-    }
-    res.json({
-      success: true,
+      let user = users.find(
+          u =>
+              u.ethAddress &&
+              u.ethAddress.toLowerCase() ===
+              ethAddress.toLowerCase()
+      );
+
+      if(!user){
+
+          isNewUser = true;
+
+          const canopyWallet = createCanopyWallet();
+
+          user = {
+
+              ethAddress,
+
+              canopyAddress: canopyWallet.address,
+
+              name:"",
+              username:"",
+              bio:"",
+              photo:"",
+              cover:"",
+
+              createdAt:Date.now(),
+              updatedAt:Date.now()
+
+          };
+
+          users.push(user);
+
+          saveDB(users);
+
+      }
+
+      const needProfile =
+
+      !user.name ||
+      !user.username ||
+      !user.photo ||
+      !user.cover;
+  
+  res.json({
+  
+      success:true,
+  
+      isNewUser,
+  
+      needProfile,
+  
       user
-    });
+  
+  });
 
-  } catch(err) {
-    console.error(err);
+  } catch(err){
 
-    res.status(500).json({
-      success:false,
-      error:err.message
-    });
+      console.error(err);
+
+      res.status(500).json({
+
+          success:false,
+
+          error:err.message
+
+      });
+
   }
 
 });
-
-
-// 
 
 app.get("/api/user/:ethAddress", (req, res) => {
   try {

@@ -18,9 +18,6 @@
     "cover": "http://localhost:3001/uploads/1782263304317.png",
     "updatedAt": 1782101678520
   },
-  
-
-
   {
     "ethAddress": "0x6dcFfB450b77dDB8dE443c5d47Fc043B131F6439",
     "canopyAddress": "67934d6dbd5405b096518f69a77ae4b9a314f040",
@@ -29,5 +26,45 @@
     "bio": "",
     "photo": "",
     "cover": ""
+  },
+  {
+    "ethAddress": "0x9cB3eC56a9FEa5C02385d04e645F437DA7700944",
+    "canopyAddress": "b2db14b6101a2174ead3bfec2ae977bd856e6814",
+    "name": "",
+    "username": "",
+    "bio": "",
+    "photo": "",
+    "cover": ""
+  },
+  {
+    "ethAddress": "0x2508CBdc61D45fc22bE8b1c29d2BC3C9df3F2581",
+    "canopyAddress": "8bc2a2e8fd8407f92c661dc897b2a928e873da94",
+    "name": "",
+    "username": "",
+    "bio": "",
+    "photo": "",
+    "cover": ""
+  },
+  {
+    "ethAddress": "0xA7dF4d99c61168e89406BE48C14AB69D5BC450b0",
+    "canopyAddress": "30ca6f0b014c2be05008938215d56c2bf50df621",
+    "name": "",
+    "username": "",
+    "bio": "",
+    "photo": "",
+    "cover": "",
+    "createdAt": 1783062756839,
+    "updatedAt": 1783062756839
+  },
+  {
+    "ethAddress": "0x95bEDB7b4D9a6bdBb9E753718828EdCe6D6bACf6",
+    "canopyAddress": "416170b3e404185b6743a15442bf949c5535f85d",
+    "name": "Naryo",
+    "username": "@Naryo",
+    "bio": "my name is naryo",
+    "photo": "http://localhost:3001/uploads/1783070601171.png",
+    "cover": "http://localhost:3001/uploads/1783070601392.jpeg",
+    "createdAt": 1783063146947,
+    "updatedAt": 1783070601012
   }
 ]
