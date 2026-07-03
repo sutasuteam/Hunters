@@ -1,0 +1,385 @@
+package lib
+
+import (
+	"encoding/json"
+	"math"
+	"math/rand/v2"
+	"os"
+	"path"
+	"path/filepath"
+	"strings"
+
+	"github.com/alecthomas/units"
+)
+
+/* This file implements logic for 'user controlled' global configurations of each module of the node */
+
+const (
+	// GLOBAL CONSTANTS
+	UnknownChainId         = uint64(0)            // the default 'unknown' chain id
+	CanopyChainId          = uint64(1)            // NOTE: to not break nested-chain recursion, this should not be used except for 'default config/genesis' developer setups
+	DAOPoolID              = 2*math.MaxUint16 + 1 // must be above the MaxUint16 * 2 to ensure no 'overlap' with 'chainId + EscrowAddend'
+	CanopyMainnetNetworkId = 1                    // the identifier of the 'mainnet' of Canopy
+)
+
+const (
+	// FILE NAMES in the 'data directory'
+	ConfigFilePath    = "config.json"        // the file path for the node configuration
+	ValKeyPath        = "validator_key.json" // the file path for the node's private key
+	GenesisFilePath   = "genesis.json"       // the file path for the genesis (first block)
+	ProposalsFilePath = "proposals.json"     // the file path for governance proposal voting configuration
+	PollsFilePath     = "polls.json"         // the file path for governance 'straw' polling voting and tracking
+)
+
+// Config is the structure of the user configuration options for a Canopy node
+type Config struct {
+	MainConfig         // main options spanning over all modules
+	LoggerConfig       // logger options
+	RPCConfig          // rpc API options
+	StateMachineConfig // FSM options
+	StoreConfig        // persistence options
+	P2PConfig          // peer-to-peer options
+	ConsensusConfig    // bft options
+	MempoolConfig      // mempool options
+	MetricsConfig      // telemetry options
+}
+
+// DefaultConfig() returns a Config with developer set options
+func DefaultConfig() Config {
+	return Config{
+		MainConfig:         DefaultMainConfig(),
+		RPCConfig:          DefaultRPCConfig(),
+		StateMachineConfig: DefaultStateMachineConfig(),
+		StoreConfig:        DefaultStoreConfig(),
+		P2PConfig:          DefaultP2PConfig(),
+		ConsensusConfig:    DefaultConsensusConfig(),
+		MempoolConfig:      DefaultMempoolConfig(),
+		MetricsConfig:      DefaultMetricsConfig(),
+	}
+}
+
+// MAIN CONFIG BELOW
+
+type MainConfig struct {
+	LogLevel            string                 `json:"logLevel"`            // any level includes the levels above it: debug < info < warning < error
+	ChainId             uint64                 `json:"chainId"`             // the identifier of this particular chain within a single 'network id'
+	SleepUntil          uint64                 `json:"sleepUntil"`          // allows coordinated 'wake-ups' for genesis or chain halt events
+	RootChain           []RootChain            `json:"rootChain"`           // a list of the root chain(s) a node could connect to as dictated by the governance parameter 'RootChainId'
+	RunVDF              bool                   `json:"runVDF"`              // whether the node should run a Verifiable Delay Function to help secure the network against Long-Range-Attacks
+	Headless            bool                   `json:"headless"`            // turn off the web wallet and block explorer 'web' front ends
+	AutoUpdate          bool                   `json:"autoUpdate"`          // check for new versions of software each X time
+	AutoUpdateRepoOwner string                 `json:"autoUpdateRepoOwner"` // GitHub repo owner for core auto-updates (e.g., "canopy-network")
+	AutoUpdateRepoName  string                 `json:"autoUpdateRepoName"`  // GitHub repo name for core auto-updates (e.g., "canopy")
+	Plugin              string                 `json:"plugin"`              // the configured plugin to use
+	PluginTimeoutMS     int                    `json:"pluginTimeoutMS"`     // plugin request timeout in milliseconds
+	PluginAutoUpdate    PluginAutoUpdateConfig `json:"pluginAutoUpdate"`    // plugin auto-update configuration
+}
+
+// PluginAutoUpdateConfig holds configuration for plugin auto-updates
+type PluginAutoUpdateConfig struct {
+	Enabled   bool   `json:"enabled"`   // whether plugin auto-update is enabled
+	RepoOwner string `json:"repoOwner"` // GitHub repository owner (e.g., "canopy-network")
+	RepoName  string `json:"repoName"`  // GitHub repository name (e.g., "canopy")
+}
+
+// DefaultMainConfig() sets log level to 'info'
+func DefaultMainConfig() MainConfig {
+	return MainConfig{
+		LogLevel: "info", // everything but debug is the default
+		RootChain: []RootChain{
+			{
+				ChainId: CanopyChainId,            // RootChainId is chain id 1
+				Url:     "http://localhost:50002", // RooChainURL points to self
+			},
+		},
+		RunVDF:          true,          // run the VDF by default
+		ChainId:         CanopyChainId, // default chain url is 1
+		Headless:        false,         // serve the web wallet and block explorer by default
+		AutoUpdate:      true,          // set it as default while in inmature state
+		PluginTimeoutMS: 1000,          // 1 second default plugin timeout
+	}
+}
+
+// GetLogLevel() parses the log string in the config file into a LogLevel Enum
+func (m *MainConfig) GetLogLevel() int32 {
+	switch {
+	case strings.Contains(strings.ToLower(m.LogLevel), "deb"):
+		return DebugLevel
+	case strings.Contains(strings.ToLower(m.LogLevel), "inf"):
+		return InfoLevel
+	case strings.Contains(strings.ToLower(m.LogLevel), "war"):
+		return WarnLevel
+	case strings.Contains(strings.ToLower(m.LogLevel), "err"):
+		return ErrorLevel
+	default:
+		return DebugLevel
+	}
+}
+
+// RPC CONFIG BELOW
+
+type RPCConfig struct {
+	WalletPort                 string `json:"walletPort"`                 // the port where the web wallet is hosted
+	ExplorerPort               string `json:"explorerPort"`               // the port where the block explorer is hosted
+	RPCPort                    string `json:"rpcPort"`                    // the port where the rpc server is hosted
+	AdminPort                  string `json:"adminPort"`                  // the port where the admin rpc server is hosted
+	ProfilingPort              string `json:"profilingPort"`              // the port where the pprof profiling server is hosted
+	RPCUrl                     string `json:"rpcURL"`                     // the url where the rpc server is hosted
+	AdminRPCUrl                string `json:"adminRPCUrl"`                // the url where the admin rpc server is hosted
+	TimeoutS                   int    `json:"timeoutS"`                   // the rpc request timeout in seconds
+	IndexerBlobCacheEntries    int    `json:"indexerBlobCacheEntries"`    // number of cached indexer blobs to keep in memory
+	MaxRCSubscribers           int    `json:"maxRCSubscribers"`           // max total root-chain subscribers
+	MaxRCSubscribersPerChain   int    `json:"maxRCSubscribersPerChain"`   // max root-chain subscribers per chain id
+	RCSubscriberReadLimitBytes int64  `json:"rcSubscriberReadLimitBytes"` // max bytes allowed in a single ws message from a subscriber
+	RCSubscriberWriteTimeoutMS int    `json:"rcSubscriberWriteTimeoutMS"` // ws write timeout for publishing root-chain info
+	RCSubscriberPongWaitS      int    `json:"rcSubscriberPongWaitS"`      // time to wait for pong responses
+	RCSubscriberPingPeriodS    int    `json:"rcSubscriberPingPeriodS"`    // how often to ping subscribers
+}
+
+// RootChain defines a rpc url to a possible 'root chain' which is used if the governance parameter RootChainId == ChainId
+type RootChain struct {
+	ChainId uint64 `json:"chainId"` // used if the governance parameter RootChainId == ChainId
+	Url     string `json:"url"`     // the url to the 'root chain' rpc
+}
+
+// DefaultRPCConfig() sets rpc url to localhost and sets wallet, explorer, rpc, and admin ports from [50000-50003]
+func DefaultRPCConfig() RPCConfig {
+	return RPCConfig{
+		WalletPort:                 "50000",                    // find the wallet on localhost:50000
+		ExplorerPort:               "50001",                    // find the explorer on localhost:50001
+		RPCPort:                    "50002",                    // the rpc is served on localhost:50002
+		AdminPort:                  "50003",                    // the admin rpc is served on localhost:50003
+		ProfilingPort:              "6060",                     // the pprof profiling server is served on localhost:6060
+		RPCUrl:                     "http://localhost:50002",   // use a local rpc by default
+		AdminRPCUrl:                "http://localhost:50003",   // use a local admin rpc by default
+		TimeoutS:                   3,                          // the rpc timeout is 3 seconds
+		IndexerBlobCacheEntries:    64,                         // cache the most recent indexer blobs
+		MaxRCSubscribers:           512,                        // limit total root-chain subscribers
+		MaxRCSubscribersPerChain:   128,                        // limit subscribers per chain id
+		RCSubscriberReadLimitBytes: int64(64 * units.Kilobyte), // cap inbound ws message sizes
+		RCSubscriberWriteTimeoutMS: 10000,                      // 10s write deadline for publishes
+		RCSubscriberPongWaitS:      60,                         // 60s pong wait
+		RCSubscriberPingPeriodS:    50,                         // 50s ping interval
+	}
+}
+
+// STATE MACHINE CONFIG BELOW
+
+// defaults for on-chain minting schedule
+const (
+	// the number of tokens in micro denomination that are initially (before halvenings) minted per block
+	DefaultInitialTokensPerBlock = uint64(80 * 1000000) // 80 CNPY
+	// the number of blocks between each halvening (block reward is cut in half) event
+	DefaultBlocksPerHalvening = uint64(3150000) // ~ 2 years - 20 second blocks
+)
+
+// StateMachineConfig houses FSM level options
+type StateMachineConfig struct {
+	InitialTokensPerBlock uint64 `json:"initialTokensPerBlock"` // initial micro tokens minted per block (before halvenings)
+	BlocksPerHalvening    uint64 `json:"blocksPerHalvening"`    // number of blocks between block reward halvings
+	FaucetAddress         string `json:"faucetAddress"`         // if set: "send" txs from this address will auto-mint on insufficient funds (dev/test only)
+}
+
+// DefaultStateMachineConfig returns FSM defaults
+func DefaultStateMachineConfig() StateMachineConfig {
+	return StateMachineConfig{
+		InitialTokensPerBlock: DefaultInitialTokensPerBlock,
+		BlocksPerHalvening:    DefaultBlocksPerHalvening,
+		FaucetAddress:         "",
+	}
+}
+
+// CONSENSUS CONFIG BELOW
+
+// ConsensusConfig defines the consensus phase timeouts for bft synchronicity
+// NOTES:
+// - BlockTime = ElectionTimeout + ElectionVoteTimeout + ProposeTimeout + ProposeVoteTimeout + PrecommitTimeout + PrecommitVoteTimeout + CommitTimeout + CommitProcess
+// - async faults may lead to extended block time
+// - social consensus dictates BlockTime for the protocol - being oo fast or too slow can lead to Non-Signing and Consensus failures
+type ConsensusConfig struct {
+	NewHeightTimeoutMs      int `json:"newHeightTimeoutMS"`      // how long (in milliseconds) the replica sleeps before moving to the ELECTION phase
+	ElectionTimeoutMS       int `json:"electionTimeoutMS"`       // minus VRF creation time (if Candidate), is how long (in milliseconds) the replica sleeps before moving to ELECTION-VOTE phase
+	ElectionVoteTimeoutMS   int `json:"electionVoteTimeoutMS"`   // minus QC validation + vote time, is how long (in milliseconds) the replica sleeps before moving to PROPOSE phase
+	ProposeTimeoutMS        int `json:"proposeTimeoutMS"`        // minus Proposal creation time (if Leader), is how long (in milliseconds) the replica sleeps before moving to PROPOSE-VOTE phase
+	ProposeVoteTimeoutMS    int `json:"proposeVoteTimeoutMS"`    // minus QC validation + vote time, is how long (in milliseconds) the replica sleeps before moving to PRECOMMIT phase
+	PrecommitTimeoutMS      int `json:"precommitTimeoutMS"`      // minus Proposal-QC aggregation time (if Leader), how long (in milliseconds) the replica sleeps before moving to the PRECOMMIT-VOTE phase
+	PrecommitVoteTimeoutMS  int `json:"precommitVoteTimeoutMS"`  // minus QC validation + vote time, is how long (in milliseconds) the replica sleeps before moving to COMMIT phase
+	CommitTimeoutMS         int `json:"commitTimeoutMS"`         // minus Precommit-QC aggregation time (if Leader), how long (in milliseconds) the replica sleeps before moving to the COMMIT-PROCESS phase
+	RoundInterruptTimeoutMS int `json:"roundInterruptTimeoutMS"` // minus gossiping current Round time, how long (in milliseconds) the replica sleeps before moving to PACEMAKER phase
+}
+
+// DefaultConsensusConfig() configures the block time
+func DefaultConsensusConfig() ConsensusConfig {
+	return ConsensusConfig{
+		NewHeightTimeoutMs:     4500, // 4.5 seconds
+		ElectionTimeoutMS:      1500, // 1.5 seconds
+		ElectionVoteTimeoutMS:  1500, // 1.5 seconds
+		ProposeTimeoutMS:       2500, // 2.5 seconds
+		ProposeVoteTimeoutMS:   4000, // 4 seconds
+		PrecommitTimeoutMS:     2000, // 2 seconds
+		PrecommitVoteTimeoutMS: 2000, // 2 seconds
+		CommitTimeoutMS:        2000, // 2 seconds
+	}
+}
+
+// BlockTimeMS() returns the expected block time in milliseconds
+func (c *ConsensusConfig) BlockTimeMS() int {
+	return c.NewHeightTimeoutMs +
+		c.ElectionTimeoutMS +
+		c.ElectionVoteTimeoutMS +
+		c.ProposeTimeoutMS +
+		c.ProposeVoteTimeoutMS +
+		c.PrecommitTimeoutMS +
+		c.PrecommitVoteTimeoutMS +
+		c.CommitTimeoutMS
+}
+
+// P2P CONFIG BELOW
+
+// P2PConfig defines peering compatibility and limits as well as actions on specific peering IPs / IDs
+type P2PConfig struct {
+	NetworkID           uint64            `json:"networkID"`           // the ID for the peering network
+	ListenAddress       string            `json:"listenAddress"`       // listen for incoming connection
+	ExternalAddress     string            `json:"externalAddress"`     // advertise for external dialing
+	MaxInbound          int               `json:"maxInbound"`          // max inbound peers
+	MaxOutbound         int               `json:"maxOutbound"`         // max outbound peers
+	TrustedPeerIDs      []string          `json:"trustedPeerIDs"`      // trusted public keys
+	DialPeers           []string          `json:"dialPeers"`           // peers to consistently dial until expo-backoff fails (format pubkey@ip:port)
+	BannedPeerIDs       []string          `json:"bannedPeersIDs"`      // banned public keys
+	BannedIPs           []string          `json:"bannedIPs"`           // banned IPs
+	MinimumPeersToStart int               `json:"minimumPeersToStart"` // the minimum connections required to start consensus
+	ValidatorTCPProxy   map[uint64]string `json:"validator_tcp_proxy"` // tcp proxy config mapping listen port to target address
+	GossipThreshold     uint              `json:"gossipThreshold"`     // number of must connects needed to switch to full gossip
+}
+
+func DefaultP2PConfig() P2PConfig {
+	return P2PConfig{
+		NetworkID:           CanopyMainnetNetworkId,
+		ListenAddress:       "0.0.0.0:9001",      // default TCP address is 9001 for chain 1 (9002 for chain 2 etc.)
+		ExternalAddress:     "",                  // should be populated by the user
+		MaxInbound:          21,                  // inbounds should be close to 3x greater than outbounds
+		MaxOutbound:         7,                   // to ensure 'new joiners' have slots to take
+		MinimumPeersToStart: 0,                   // requires no peers to start consensus by default (suitable for 1 node network)
+		ValidatorTCPProxy:   map[uint64]string{}, // initialize the map
+	}
+}
+
+// STORE CONFIG BELOW
+
+// StoreConfig is user configurations for the key value database
+type StoreConfig struct {
+	DataDirPath    string `json:"dataDirPath"`    // path of the designated folder where the application stores its data
+	DBName         string `json:"dbName"`         // name of the database
+	IndexByAccount bool   `json:"indexByAccount"` // index transactions by account
+	InMemory       bool   `json:"inMemory"`       // non-disk database, only for testing
+	// recommended range: 500-2000 for optimal performance. Values below 500 increase disk I/O
+	// by several orders of magnitude, reducing performance and accelerating disk degradation during
+	// sync. Lower values also increase the risk of data loss due to a pebble issue where batches are
+	// returned before commit completion when compaction runs concurrently with commits.
+	LSSCompactionInterval uint64 `json:"lssCompactionInterval"` // interval for compacting latest store data
+	BackupDirectory       string `json:"backupDirectory"`       // directory where backups of the database are stored
+	BackupInterval        uint64 `json:"backupInterval"`        // interval in blocks for creating backups of the database (0 to disable automatic backups)
+	CompressionProfile    string `json:"compressionProfile"`    // the pebbledb compression profile to use.
+}
+
+// DefaultDataDirPath() is $USERHOME/.canopy
+func DefaultDataDirPath() string {
+	// get the user home
+	home, err := os.UserHomeDir()
+	// home, err := os.Getwd()
+	// if unable to get the user home
+	if err != nil {
+		// fatal error
+		panic(err)
+	}
+	// exit with full default data directory path
+	// return filepath.Join(home, "canopy_2")
+	return filepath.Join(home, ".canopy")
+}
+
+// DefaultStoreConfig() returns the developer recommended store configuration
+func DefaultStoreConfig() StoreConfig {
+	return StoreConfig{
+		DataDirPath:           DefaultDataDirPath(),                      // use the default data dir path
+		DBName:                "canopy",                                  // 'canopy' database name
+		IndexByAccount:        true,                                      // index transactions by account
+		InMemory:              false,                                     // persist to disk, not memory
+		LSSCompactionInterval: uint64(rand.Int32N(101) + 500),            // clean every 500-600 blocks (random)
+		BackupDirectory:       path.Join(DefaultDataDirPath(), "backup"), // backup directory name
+		BackupInterval:        0,                                         // backups disabled by default
+		CompressionProfile:    "zstd",
+	}
+}
+
+// MEMPOOL CONFIG BELOW
+
+// MempoolConfig is the user configuration of the unconfirmed transaction pool
+type MempoolConfig struct {
+	MaxTotalBytes              uint64 `json:"maxTotalBytes"`              // maximum collective bytes in the pool
+	MaxTransactionCount        uint32 `json:"maxTransactionCount"`        // max number of Transactions
+	IndividualMaxTxSize        uint32 `json:"individualMaxTxSize"`        // max bytes of a single Transaction
+	DropPercentage             int    `json:"dropPercentage"`             // percentage that is dropped from the bottom of the queue if limits are reached
+	LazyMempoolCheckFrequencyS int    `json:"lazyMempoolCheckFrequencyS"` // how often the mempool is checked for new transactions besides the mandatory (after Commit) (0) for none
+}
+
+// DefaultMempoolConfig() returns the developer created Mempool options
+func DefaultMempoolConfig() MempoolConfig {
+	return MempoolConfig{
+		MaxTotalBytes:              uint64(10 * units.MB),      // 10 MB max size
+		MaxTransactionCount:        5000,                       // 5000 max transactions
+		IndividualMaxTxSize:        uint32(4 * units.Kilobyte), // 4 KB max individual tx size
+		DropPercentage:             35,                         // drop 35% if limits are reached
+		LazyMempoolCheckFrequencyS: 2,                          // check every 2 seconds
+	}
+}
+
+// MetricsConfig represents the configuration for the metrics server
+type MetricsConfig struct {
+	MetricsEnabled         bool   `json:"metricsEnabled"`         // if the metrics are enabled
+	PrometheusAddress      string `json:"prometheusAddress"`      // the address of the server
+	HeapProfilingEnabled   bool   `json:"heapProfilingEnabled"`   // enable periodic heap profiling (warning: causes GC pauses)
+	HeapProfilingIntervalS int    `json:"heapProfilingIntervalS"` // interval in seconds between heap profile snapshots
+}
+
+// DefaultMetricsConfig() returns the default metrics configuration
+func DefaultMetricsConfig() MetricsConfig {
+	return MetricsConfig{
+		MetricsEnabled:         true,           // enabled by default
+		PrometheusAddress:      "0.0.0.0:9090", // the default prometheus address
+		HeapProfilingEnabled:   false,          // disabled by default (causes GC pauses)
+		HeapProfilingIntervalS: 10,             // 10 second interval when enabled
+	}
+}
+
+// WriteToFile() saves the Config object to a JSON file
+func (c Config) WriteToFile(filepath string) error {
+	// convert the config to indented 'pretty' json bytes
+	jsonBytes, err := json.MarshalIndent(c, "", "  ")
+	// if an error occurred during the conversion
+	if err != nil {
+		// exit with error
+		return err
+	}
+	// write the config.json file to the data directory
+	return os.WriteFile(filepath, jsonBytes, os.ModePerm)
+}
+
+// NewConfigFromFile() populates a Config object from a JSON file
+func NewConfigFromFile(filepath string) (Config, error) {
+	// read the file into bytes using
+	fileBytes, err := os.ReadFile(filepath)
+	// if an error occurred
+	if err != nil {
+		// exit with error
+		return Config{}, err
+	}
+	// define the default config to fill in any blanks in the file
+	c := DefaultConfig()
+	// populate the default config with the file bytes
+	if err = json.Unmarshal(fileBytes, &c); err != nil {
+		// exit with error
+		return Config{}, err
+	}
+	// exit
+	return c, nil
+}

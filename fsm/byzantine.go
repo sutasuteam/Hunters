@@ -1,0 +1,492 @@
+package fsm
+
+import (
+	"github.com/canopy-network/canopy/lib"
+	"github.com/canopy-network/canopy/lib/crypto"
+	"slices"
+)
+
+/* This file contains logic regarding byzantine actor handling and bond slashes */
+
+// HandleByzantine() handles the byzantine (faulty/malicious) participants from a QuorumCertificate
+func (s *StateMachine) HandleByzantine(qc *lib.QuorumCertificate, vs *lib.ValidatorSet) (nonSignerPercent int, err lib.ErrorI) {
+	// if validator set is nil; chain is not root, so don't handle byzantine evidence
+	if vs == nil {
+		return
+	}
+	// get the validator params
+	params, err := s.GetParamsVal()
+	if err != nil {
+		return 0, err
+	}
+
+	// NON SIGNER LOGIC
+
+	// if current block marks the ending of the NonSignWindow
+	if s.Height()%params.NonSignWindow == 0 {
+		// protocol v1/v2 settlement semantics are handled inside SlashAndResetNonSigners.
+		if err = s.SlashAndResetNonSigners(qc.Header.ChainId, params); err != nil {
+			return 0, err
+		}
+	}
+	// get those who did not sign this particular QC but should have
+	nonSignerPubKeys, nonSignerPercent, err := qc.GetNonSigners(vs.ValidatorSet)
+	if err != nil {
+		return 0, err
+	}
+	// ensure both the certificate and the signature are non-nil
+	if qc != nil && qc.Signature != nil && qc.Header != nil {
+		qc.Signature.LogNonSigners(vs.ValidatorSet, qc.ProposerKey, qc.Header.Height, qc.Header.ChainId, s.log)
+	}
+	// increment the non-signing count for the non-signers
+	if err = s.IncrementNonSigners(qc.Header.ChainId, nonSignerPubKeys); err != nil {
+		return 0, err
+	}
+
+	// DOUBLE SIGNER LOGIC
+
+	// define a convenience variable for the slash recipients
+	slashRecipients := qc.Results.SlashRecipients
+	// sanity check the slash recipient isn't nil
+	if slashRecipients != nil {
+		// set in state and slash double signers
+		if err = s.HandleDoubleSigners(qc.Header.ChainId, params, slashRecipients.DoubleSigners); err != nil {
+			return 0, err
+		}
+	}
+	return
+}
+
+// SlashAndResetNonSigners() resets non-signer tracking and applies protocol-versioned settlement semantics.
+// Protocol v2 intentionally performs a single settlement per non-sign window:
+// the first chain processed during reset settles against its chain-scoped counters, then
+// all non-signer keys are erased for the next window.
+func (s *StateMachine) SlashAndResetNonSigners(chainId uint64, params *ValidatorParams) (err lib.ErrorI) {
+	committeeScoped := s.IsFeatureEnabled(2)
+	var keys, slashList [][]byte
+	// execute the callback for each key under 'non-signer' prefix
+	// for every key under 'non-signer' prefix; slashes the validator if exceeded the MaxNonSign threshold
+	err = s.IterateAndExecute(NonSignerPrefix(), func(k, v []byte) (err lib.ErrorI) {
+		// track non-signer keys to delete
+		keys = append(keys, k)
+		// for each non-signer, see if they exceeded the threshold
+		// if so - add them to the bad list
+		addr, err := AddressFromKey(k)
+		if err != nil {
+			s.log.Warnf("skipping malformed non-signer key: %x", k)
+			return nil
+		}
+		// ensure no nil NonSigner
+		ptr := new(NonSigner)
+		// convert the value into a non-signer
+		if err = lib.Unmarshal(v, ptr); err != nil {
+			return
+		}
+		// protocol v1 uses global counters.
+		// protocol v2 uses per-chain counters when available.
+		count := ptr.Counter
+		if committeeScoped && len(ptr.ChainCounters) != 0 {
+			count = nonSignerCounterForChain(ptr, chainId)
+		}
+		// if the counter exceeds the max-non sign
+		if count > params.MaxNonSign {
+			// add the address to the 'bad list'
+			slashList = append(slashList, addr.Bytes())
+		}
+		return
+	})
+	if err != nil {
+		return err
+	}
+	// pause all on the bad list
+	s.SetValidatorsPaused(chainId, slashList)
+	// slash all on the bad list
+	if err = s.SlashNonSigners(chainId, params, slashList); err != nil {
+		return
+	}
+	// reset window state after settlement.
+	// this intentionally drops pending evidence for other chains in the same window.
+	_ = s.DeleteAll(keys)
+	return
+}
+
+// GetNonSigners() returns all non-quorum-certificate-signers save in the state
+func (s *StateMachine) GetNonSigners() (results NonSigners, e lib.ErrorI) {
+	// create an iterator for the non-signer prefix
+	it, e := s.Iterator(NonSignerPrefix())
+	if e != nil {
+		return
+	}
+	defer it.Close()
+	// for each item of the iterator
+	for ; it.Valid(); it.Next() {
+		// get the address from the iterator key
+		addr, err := AddressFromKey(it.Key())
+		if err != nil {
+			return nil, err
+		}
+		// define a non-signer object reference to ensure no nil
+		ptr := new(NonSigner)
+		// unmarshal the value into a ptr
+		if err = lib.Unmarshal(it.Value(), ptr); err != nil {
+			return nil, err
+		}
+		// add the non-signer to the list
+		results = append(results, &NonSigner{
+			Address: addr.Bytes(), // address is stored in the 'key' not the 'value'
+			Counter: ptr.Counter,
+		})
+	}
+	return
+}
+
+// GetDoubleSigners() returns all double signers save in the state
+// IMPORTANT NOTE: this returns <address> -> <heights> NOT <pubic_key> -> <heights>
+// CONTRACT: Querying uncommitted double signers is not supported
+func (s *StateMachine) GetDoubleSigners() (results []*lib.DoubleSigner, e lib.ErrorI) {
+	return s.Store().(lib.StoreI).GetDoubleSigners()
+}
+
+// IncrementNonSigners() upserts non-(QC)-signers by incrementing the non-signer count for the list
+func (s *StateMachine) IncrementNonSigners(chainId uint64, nonSignerPubKeys [][]byte) lib.ErrorI {
+	trackByChain := s.IsFeatureEnabled(2)
+	// for each non-signer in the list
+	for _, ns := range nonSignerPubKeys {
+		// extract the public key from the list
+		pubKey, e := crypto.NewPublicKeyFromBytes(ns)
+		if e != nil {
+			return lib.ErrPubKeyFromBytes(e)
+		}
+		// create a key for the non-signer
+		key := KeyForNonSigner(pubKey.Address().Bytes())
+		// get the value bytes for the non-signer
+		bz, err := s.Get(key)
+		if err != nil {
+			return err
+		}
+		// create a non-signer object reference to ensure a non-nil result
+		ptr := new(NonSigner)
+		// convert the value bytes into a non-signer object
+		if err = lib.Unmarshal(bz, ptr); err != nil {
+			return err
+		}
+		// increment the counter for the non-signer
+		ptr.Counter++
+		// protocol v2+ keeps a per-chain counter in the same state object.
+		if trackByChain {
+			incrementNonSignerChainCounter(ptr, chainId)
+		}
+		// set convert the object ref back to bytes
+		bz, err = lib.Marshal(ptr)
+		if err != nil {
+			return err
+		}
+		// set the object bytes in the store
+		if err = s.Set(key, bz); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// HandleDoubleSigners() validates, sets, and slashes the list of doubleSigners
+func (s *StateMachine) HandleDoubleSigners(chainId uint64, params *ValidatorParams, doubleSigners []*lib.DoubleSigner) lib.ErrorI {
+	// ensure the store is a StoreI for this call
+	store, ok := s.Store().(lib.StoreI)
+	if !ok {
+		return ErrWrongStoreType()
+	}
+	// create a list to hold the double signers that will be slashed
+	var slashList [][]byte
+	// for each double signer
+	for _, doubleSigner := range doubleSigners {
+		// ensure the double signer isn't nil nor the id is nil
+		if doubleSigner == nil || doubleSigner.Id == nil {
+			return lib.ErrEmptyDoubleSigner()
+		}
+		// ensure there's at least 1 height in the list
+		if len(doubleSigner.Heights) == 0 {
+			return lib.ErrInvalidDoubleSignHeights()
+		}
+		// convert the double-signer ID to a public key
+		pubKey, e := crypto.NewPublicKeyFromBytes(doubleSigner.Id)
+		if e != nil {
+			return lib.ErrPubKeyFromBytes(e)
+		}
+		// convert that public key to an address
+		address := pubKey.Address().Bytes()
+		// for each double sign height
+		for _, height := range doubleSigner.Heights {
+			// check if the 'double sign' is valid for the address and height
+			isValidDS, err := store.IsValidDoubleSigner(address, height)
+			if err != nil {
+				return err
+			}
+			// if - it's invalid (already exists) then return invalid
+			if !isValidDS {
+				return lib.ErrInvalidDoubleSigner()
+			}
+			// else - index the double signer by address and height
+			if err = store.IndexDoubleSigner(address, height); err != nil {
+				return err
+			}
+			// add to slash list
+			slashList = append(slashList, pubKey.Address().Bytes())
+		}
+	}
+	// pause all on the bad list
+	//s.SetValidatorsPaused(chainId, slashList)
+	// slash those on the list
+	return s.SlashDoubleSigners(chainId, params, slashList)
+}
+
+// SlashNonSigners() burns the staked tokens of non-quorum-certificate-signers
+func (s *StateMachine) SlashNonSigners(chainId uint64, params *ValidatorParams, nonSignerAddrs [][]byte) lib.ErrorI {
+	return s.SlashValidators(nonSignerAddrs, chainId, params.NonSignSlashPercentage, params)
+}
+
+// SlashDoubleSigners() burns the staked tokens of double signers
+func (s *StateMachine) SlashDoubleSigners(chainId uint64, params *ValidatorParams, doubleSignerAddrs [][]byte) lib.ErrorI {
+	return s.SlashValidators(doubleSignerAddrs, chainId, params.DoubleSignSlashPercentage, params)
+}
+
+// ForceUnstakeValidator() automatically begins unstaking the validator
+func (s *StateMachine) ForceUnstakeValidator(address crypto.AddressI) lib.ErrorI {
+	// get the validator object from state
+	validator, err := s.GetValidator(address)
+	if err != nil {
+		s.log.Warnf("validator %s is not found to be force unstaked", address.String()) // defensive
+		return nil
+	}
+	// check if already unstaking
+	if validator.UnstakingHeight != 0 {
+		s.log.Warnf("validator %s is already unstaking can't be forced to begin unstaking", address.String())
+		return nil
+	}
+	// get params for unstaking blocks
+	p, err := s.GetParamsVal()
+	if err != nil {
+		return err
+	}
+	// get the unstaking blocks from the parameters
+	unstakingBlocks := p.GetUnstakingBlocks()
+	// calculate the future unstaking height
+	unstakingHeight := s.Height() + unstakingBlocks
+	// set the validator as unstaking
+	if err = s.SetValidatorUnstaking(address, validator, unstakingHeight); err != nil {
+		return err
+	}
+	// add begin unstaking event
+	return s.EventAutoBeginUnstaking(address.Bytes())
+}
+
+// SlashValidators() burns a specified percentage of multiple validator's staked tokens
+func (s *StateMachine) SlashValidators(addresses [][]byte, chainId, percent uint64, p *ValidatorParams) lib.ErrorI {
+	// for each address in the list
+	for _, addr := range addresses {
+		// retrieve the validator
+		validator, err := s.GetValidator(crypto.NewAddressFromBytes(addr))
+		if err != nil {
+			s.log.Warn(ErrSlashNonExistentValidator().Error())
+			continue
+		}
+		// slash the validator
+		if err = s.SlashValidator(validator, chainId, percent, p); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// SlashValidator() burns a specified percentage of a validator's staked tokens
+func (s *StateMachine) SlashValidator(validator *Validator, chainId, percent uint64, p *ValidatorParams) (err lib.ErrorI) {
+	// create a convenience variable to hold the new validator committees (in case the validator was ejected)
+	newCommittees := slices.Clone(validator.Committees)
+	// protocol v2+ enables correct committee scoped slashing and ejection
+	if committeeScoped := s.IsFeatureEnabled(2); committeeScoped {
+		// ensure no unauthorized slashes may occur
+		if !slices.Contains(validator.Committees, chainId) {
+			// This may happen if an async event causes a validator edit stake to occur before being slashed
+			// Non-byzantine actors order 'certificate result' messages before 'edit stake'
+			s.log.Warn(ErrInvalidChainId().Error())
+			return nil
+		}
+		// a 'slash tracker' is used to limit the max slash per committee per block
+		// get the slashed percent so far in this block by this committee
+		slashTotal := s.slashTracker.GetTotalSlashPercent(validator.Address, chainId)
+		// check to see if it exceeds the max
+		if slashTotal >= p.MaxSlashPerCommittee {
+			return nil // no slash nor no removal logic occurs because this block already hit the limit with a previous slash
+		}
+		// check to see if it 'now' exceeds the max
+		if slashTotal+percent >= p.MaxSlashPerCommittee {
+			// only slash up to the maximum
+			percent = p.MaxSlashPerCommittee - slashTotal
+			// for each committee
+			for i, id := range newCommittees {
+				// if id is the slash chain id
+				if id == chainId {
+					// remove the validator from the committee
+					newCommittees = append(newCommittees[:i], newCommittees[i+1:]...)
+					// exit the loop
+					break
+				}
+			}
+		}
+		// update the slash tracker
+		s.slashTracker.AddSlash(validator.Address, chainId, percent)
+	}
+	// initialize address and new stake variable
+	addr := crypto.NewAddressFromBytes(validator.Address)
+	var stakeAfterSlash uint64
+	switch {
+	case percent >= 100 || validator.StakedAmount == 0:
+		stakeAfterSlash = 0
+	case percent == 0:
+		stakeAfterSlash = validator.StakedAmount
+	default:
+		stakeAfterSlash = lib.SafeMulDiv(validator.StakedAmount, 100-percent, 100)
+	}
+	// calculate the slash amount
+	slashAmount := validator.StakedAmount - stakeAfterSlash
+	// subtract from total supply
+	if err = s.SubFromTotalSupply(slashAmount); err != nil {
+		return err
+	}
+	// if stake after slash is 0, remove the validator
+	if stakeAfterSlash == 0 {
+		// add slash event
+		if err = s.EventSlash(validator.Address, slashAmount); err != nil {
+			return err
+		}
+		// DeleteValidator subtracts from staked supply
+		return s.DeleteValidator(validator)
+	}
+	// subtract from staked supply
+	if err = s.SubFromStakedSupply(slashAmount); err != nil {
+		return err
+	}
+	// update the committees based on the new stake amount
+	if err = s.UpdateCommittees(addr, validator, stakeAfterSlash, newCommittees); err != nil {
+		return err
+	}
+	// set the committees in the validator structure
+	validator.Committees = newCommittees
+	// update the stake amount and set the validator
+	validator.StakedAmount = stakeAfterSlash
+	// in case it was set to unstaking do not set the validator again
+	if isSet, e := s.SetValidatorUnstakingIfBelowMinimum(validator, p); isSet || e != nil {
+		return e
+	}
+	// update the validator
+	if err = s.SetValidator(validator); err != nil {
+		return err
+	}
+	// add slash event
+	return s.EventSlash(validator.Address, slashAmount)
+}
+
+// LoadMinimumEvidenceHeight() loads the minimum height the evidence must be to still be usable
+func (s *StateMachine) LoadMinimumEvidenceHeight() (uint64, lib.ErrorI) {
+	// use the time machine to ensure a clean database transaction
+	historicalFSM, err := s.TimeMachine(s.Height())
+	// if an error occurred
+	if err != nil {
+		// exit with error
+		return 0, err
+	}
+	// once function completes, discard it
+	defer historicalFSM.Discard()
+	// get the validator params from state
+	valParams, err := historicalFSM.GetParamsVal()
+	if err != nil {
+		return 0, err
+	}
+	// define convenience variables
+	height, unstakingBlocks := historicalFSM.Height(), valParams.GetUnstakingBlocks()
+	// if height is less than staking blocks, use *genesis* as the minimum evidence height
+	if height < unstakingBlocks {
+		return 0, nil
+	}
+	// minimum evidence = unstaking blocks ago
+	return height - unstakingBlocks, nil
+}
+
+// BYZANTINE HELPERS BELOW
+
+type NonSigners []*NonSigner
+
+// SlashTracker is a map of address -> committee -> slash percentage
+// which is used to ensure no committee exceeds max slash within a single block
+// NOTE: this slash tracker is naive and doesn't account for the consecutive reduction
+// of a slash percentage impact i.e. two 10% slashes = 20%, but technically it's 19%
+type SlashTracker map[string]map[uint64]uint64
+
+func NewSlashTracker() *SlashTracker {
+	slashTracker := make(SlashTracker)
+	return &slashTracker
+}
+
+// Clone() returns a deep copy of the slash tracker to allow safe rollback on failed operations
+func (s *SlashTracker) Clone() *SlashTracker {
+	if s == nil {
+		return nil
+	}
+	clone := make(SlashTracker, len(*s))
+	for addr, m := range *s {
+		cp := make(map[uint64]uint64, len(m))
+		for chainId, percent := range m {
+			cp[chainId] = percent
+		}
+		clone[addr] = cp
+	}
+	return &clone
+}
+
+// AddSlash() adds a slash for an address at by a committee for a certain percent
+func (s *SlashTracker) AddSlash(address []byte, chainId, percent uint64) {
+	// add the percent to the total
+	(*s)[s.toKey(address)][chainId] += percent
+}
+
+// GetTotalSlashPercent() returns the total percent for a slash
+func (s *SlashTracker) GetTotalSlashPercent(address []byte, chainId uint64) (percent uint64) {
+	// return the total percent
+	return (*s)[s.toKey(address)][chainId]
+}
+
+// toKey() converts the address bytes to a string and ensures the map is initialized for that address
+func (s *SlashTracker) toKey(address []byte) string {
+	// convert the address to a string
+	addr := lib.BytesToString(address)
+	// if the address has not yet been slashed by any committee
+	// create the corresponding committee map
+	if _, ok := (*s)[addr]; !ok {
+		(*s)[addr] = make(map[uint64]uint64)
+	}
+	return addr
+}
+
+// incrementNonSignerChainCounter() increases the non signer count (chain specific)
+func incrementNonSignerChainCounter(nonSigner *NonSigner, chainId uint64) {
+	for _, c := range nonSigner.ChainCounters {
+		if c.ChainId == chainId {
+			c.Counter++
+			return
+		}
+	}
+	nonSigner.ChainCounters = append(nonSigner.ChainCounters, &NonSignerChainCounter{
+		ChainId: chainId,
+		Counter: 1,
+	})
+}
+
+// nonSignerCounterForChain() returns the chain specific non-signer count
+func nonSignerCounterForChain(nonSigner *NonSigner, chainId uint64) uint64 {
+	for _, c := range nonSigner.ChainCounters {
+		if c.ChainId == chainId {
+			return c.Counter
+		}
+	}
+	return 0
+}

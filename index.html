@@ -1,0 +1,5001 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+  <title>Hunters</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="description" content="Typenote — W3.CSS: Jane Bloglife">
+  <meta name="keywords"    content="typenote, w3css, templates, jane, bloglife">
+  <meta name="author"      content="Gurov Dmitriy">
+  <meta name="robots"      content="noindex, follow">
+
+
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+ 
+
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/style.css" type="text/css">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+   <link rel="shortcut icon" href="Logo/Hunters.png" type="image/x-icon">
+  
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+html { visibility: hidden; }
+
+
+body{font-family:var(--font-sans);background:var(--color-background-tertiary);color:var(--color-text-primary)}
+:root{
+  --h-accent:#0e0e0f;
+  --h-accent2:#1D9E75;
+  --h-gold:#BA7517;
+
+  --font-sans:'Inter',Arial,sans-serif;
+  --font-mono:'Consolas',monospace;
+
+  --color-background-primary:#ffffff;
+  --color-background-secondary:#f8f8fb;
+  --color-background-tertiary:#f5f5f7;
+
+  --color-text-primary:#1d1d1f;
+  --color-text-secondary:#666666;
+  --color-text-tertiary:#999999;
+
+  --color-border-secondary:#d9d9d9;
+  --color-border-tertiary:#ececec;
+
+  --border-radius-md:10px;
+  --border-radius-lg:14px;
+  --border-radius-xl:20px;
+}
+
+
+
+.app{display:flex;min-height:100vh;max-width:1100px;margin:0 auto;gap:0}
+.sidebar{width:240px;flex-shrink:0;padding:1.5rem 1rem;display:flex;flex-direction:column;gap:4px;background:var(--color-background-primary);border-right:0.5px solid var(--color-border-tertiary)}
+.logo{display:flex;align-items:center;gap:8px;padding:8px 12px;margin-bottom:1rem}
+.logo-icon{width:36px;height:36px;background:var(--h-accent);border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;background: none;}
+.logo-text{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--border-radius-md);cursor:pointer;font-size:15px;color:var(--color-text-secondary);transition:background .15s}
+.nav-item:hover{
+  background:rgba(185, 211, 192, 0.1);
+  color:#1D9E75;
+}
+.nav-item.active{color:var(--h-accent);font-weight:500;background:rgba(185, 211, 192, 0.1)}
+.nav-item i{font-size:20px}
+.sidebar-bottom{margin-top:auto}
+.btn-post{width:100%;padding:10px;background:var(--h-accent);color:#fff;border:none;border-radius:var(--border-radius-lg);font-size:15px;font-weight:500;cursor:pointer;margin-bottom:1rem}
+.btn-post:hover{opacity:.9}
+.profile-pill{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--border-radius-lg);cursor:pointer;border:0.5px solid var(--color-border-tertiary)}
+.profile-pill:hover{background:var(--color-background-secondary)}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0}
+.av-purple{background:#EEEDFE;color:#534AB7}
+.av-teal{background:#E1F5EE;color:#0F6E56}
+.av-coral{background:#FAECE7;color:#993C1D}
+.av-blue{background:#E6F1FB;color:#185FA5}
+.main{flex:1;min-width:0;border-right:0.5px solid var(--color-border-tertiary)}
+.topbar{padding:1rem 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);display:flex;justify-content:space-between;align-items:center;background:var(--color-background-primary);position:sticky;top:0;z-index:10}
+.page-title{font-size:17px;font-weight:500}
+.search-box-Home{position: relative;left: 165px;  display:flex;align-items:center;gap:8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:6px 14px;font-size:14px;color:var(--color-text-secondary);cursor:text;max-width:160px}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:6px 14px;font-size:14px;color:var(--color-text-secondary);cursor:text;max-width:160px}
+.compose-box{background:var(--color-background-primary);border-bottom:0.5px solid var(--color-border-tertiary);padding:1rem 1.5rem}
+.compose-inner{display:flex;gap:12px}
+.compose-input-area{flex:1}
+.compose-textarea{width:100%;border:none;outline:none;background:transparent;font-size:15px;font-family:var(--font-sans);resize:none;color:var(--color-text-primary);min-height:60px;padding:4px 0}
+.compose-textarea::placeholder{color:var(--color-text-tertiary)}
+.compose-actions{display:flex;align-items:center;gap:8px;border-top:0.5px solid var(--color-border-tertiary);padding-top:10px;margin-top:8px}
+.compose-btn{padding:6px 10px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:transparent;cursor:pointer;font-size:13px;color:var(--color-text-secondary);display:flex;align-items:center;gap:5px}
+.compose-btn:hover{background:var(--color-background-secondary)}
+.compose-btn i{font-size:16px}
+.compose-submit{margin-left:auto;padding:7px 18px;background:var(--h-accent);color:#fff;border:none;border-radius:20px;font-size:14px;font-weight:500;cursor:pointer}
+.compose-submit:hover{opacity:.9}
+.tabs{display:flex;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)}
+.tab{flex:1;padding:12px;text-align:center;font-size:14px;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:.15s}
+.tab.active{
+  color:#1D9E75;
+  border-bottom-color:#1D9E75;
+}
+.tab:hover:not(.active){color:var(--color-text-primary)}
+.feed{display:flex;flex-direction:column}
+.post{padding:1rem 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);cursor:pointer;transition:background .1s}
+.post:hover{background:var(--color-background-secondary)}
+.post-header{display:flex;gap:10px;margin-bottom:8px}
+.post-meta{flex:1}
+.post-name{font-size:14px;font-weight:500}
+.post-handle{font-size:13px;color:var(--color-text-secondary);margin-left:4px}
+.post-time{font-size:13px;color:var(--color-text-tertiary);float:right}
+.post-text{font-size:15px;line-height:1.5;margin-bottom:10px}
+.nft-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-bottom:10px}
+.nft-img{width:100%;height:180px;display:flex;align-items:center;justify-content:center;font-size:48px;position:relative}
+.nft-bg-1{background:linear-gradient(135deg,#EEEDFE,#AFA9EC)}
+.nft-bg-2{background:linear-gradient(135deg,#E1F5EE,#5DCAA5)}
+.nft-bg-3{background:linear-gradient(135deg,#FAECE7,#F0997B)}
+.nft-info{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;background:var(--color-background-primary)}
+.nft-name{font-size:14px;font-weight:500}
+.nft-price{font-size:13px;color:var(--h-gold)}
+.btn-buy{padding:6px 14px;background:var(--h-accent2);color:#fff;border:none;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer}
+.btn-buy:hover{opacity:.9}
+.token-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(185, 211, 192, 0.1);border:0.5px solid rgba(127,119,221,0.3);color:#534AB7;padding:4px 10px;border-radius:20px;font-size:13px;font-weight:500;margin-bottom:8px}
+.post-actions{display:flex;gap:16px}
+.action-btn{display:flex;align-items:center;gap:5px;color:var(--color-text-tertiary);font-size:13px;cursor:pointer;padding:4px;border-radius:var(--border-radius-md)}
+.action-btn:hover{color:var(--h-accent)}
+.action-btn i{font-size:17px}
+.action-btn.liked{color:#E24B4A}
+.right-panel{width:280px;flex-shrink:0;padding:1rem;display:flex;flex-direction:column;gap:1rem}
+.panel-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem}
+.panel-title{font-size:15px;font-weight:500;margin-bottom:12px}
+.trend-item{padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary);cursor:pointer}
+.trend-item:last-child{border-bottom:none}
+.trend-tag{font-size:13px;font-weight:500;color:var(--h-accent)}
+.trend-count{font-size:12px;color:var(--color-text-tertiary);margin-top:2px}
+.suggest-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.suggest-item:last-child{border-bottom:none}
+.suggest-info{flex:1}
+.suggest-name{font-size:14px;font-weight:500}
+.suggest-handle{font-size:12px;color:var(--color-text-secondary)}
+.btn-follow{padding:5px 14px;border:0.5px solid var(--h-accent);color:var(--h-accent);background:transparent;border-radius:20px;font-size:13px;cursor:pointer;font-weight:500}
+.btn-follow:hover{background:rgba(185, 211, 192, 0.1)}
+.modal-overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.45);
+backdrop-filter:blur(3px);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+}
+
+
+
+.modal{
+background:#fff;
+width:420px;
+max-width:90%;
+padding:34px;
+border-radius:16px;
+box-shadow:
+0 10px 40px rgba(0,0,0,.15);
+border:none;
+}
+
+.modal{
+  position:relative;
+}
+
+.modal-close{
+  position:absolute;
+  top:15px;
+  right:15px;
+  width:32px;
+  height:32px;
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#888;
+  font-size:20px;
+}
+
+.modal-close:hover{
+  background:#f3f3f3;
+  color:#000;
+}
+
+
+.modal-logo{
+display:flex;
+justify-content:center;
+margin-bottom:14px;
+}
+
+.modal-title{
+font-size:20px;
+font-weight:700;
+text-align:center;
+margin-bottom:8px;
+color:#222;
+}
+
+.modal-sub{
+font-size:14px;
+text-align:center;
+color:#666;
+margin-bottom:24px;
+}
+
+.form-group{margin-bottom:1rem}
+.form-label{font-size:13px;color:var(--color-text-secondary);margin-bottom:4px;display:block}
+.form-label2{display:block; cursor:pointer; border-radius: 8px; border:1px solid #ddd;font-size:13px;color:var(--color-text-secondary);margin-bottom:4px;display:block; padding: 6px 10px;}
+.form-input{
+width:100%;
+height:48px;
+padding:0 14px;
+border:1px solid #ddd;
+border-radius:8px;
+background:#fff;
+font-size:14px;
+outline:none;
+}
+
+.form-input:focus{
+border-color:#0d0d0e;
+box-shadow:0 0 0 3px rgba(185, 211, 192, 0.1);
+}
+
+.token-logo-box{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:15px;
+  margin-bottom:20px;
+}
+
+#tok-logo-preview{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  border:3px solid #ddd;
+  object-fit:cover;
+  background:#1a1a1a;
+  cursor:pointer;
+  transition:0.25s;
+}
+#tok-logo-preview:hover{
+  transform:scale(1.05);
+  border-color: #ddd;
+}
+
+
+
+
+.btn-primary{
+width:100%;
+height:48px;
+background:#fff;
+border:1px solid #ddd;
+border-radius:8px;
+font-size:15px;
+font-weight:600;
+color:#222;
+cursor:pointer;
+margin-top:10px;
+}
+
+.btn-primary:hover{
+background:#f7f7f7;
+}
+
+.btn-secondary-outline{
+width:100%;
+height:48px;
+background:#fff;
+border:1px solid #ddd;
+border-radius:8px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+cursor:pointer;
+font-size:15px;
+font-weight:500;
+margin-bottom:12px;
+margin-top:12px;
+}
+
+.btn-secondary-outline:hover{background:var(--color-background-secondary)}
+.modal-switch{text-align:center;font-size:14px;color:var(--color-text-secondary);margin-top:1rem}
+.modal-switch span{color:var(--h-accent);cursor:pointer;font-weight:500}
+.modal-switch span:hover{text-decoration:underline}
+.divider{display:flex;align-items:center;gap:10px;margin:1rem 0}
+.divider hr{flex:1;border:none;border-top:0.5px solid var(--color-border-tertiary)}
+.divider span{font-size:13px;color:var(--color-text-tertiary)}
+.nft-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.nft-pick{border:1.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:1rem;text-align:center;cursor:pointer;transition:border-color .15s}
+.nft-pick:hover,.nft-pick.selected{border-color:var(--h-accent)}
+.nft-pick-img{font-size:32px;margin-bottom:6px}
+.nft-pick-img {
+  width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+    border-radius: 5px;
+}
+.nft-pick-name{font-size:13px;font-weight:500}
+.nft-pick-price{font-size:12px;color:var(--h-gold)}
+.token-modal-fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem}
+.badge-verified{display:inline-flex;align-items:center;background:#E1F5EE;color:#0F6E56;font-size:11px;padding:2px 7px;border-radius:20px;margin-left:4px;vertical-align:middle}
+.profile-page{padding:0}
+.profile-avatar-edit{  z-index: 2;width:64px;height:64px;border-radius:50%;background:#EEEDFE;color:#534AB7;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:500;border:3px solid var(--color-background-primary);margin-top:7px;margin-bottom:8px}
+.profile-info-row{padding:1rem 1.5rem;border-bottom:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary)}
+.profile-avatar-lg{  z-index: 2;width:64px;height:64px;border-radius:50%;background:#EEEDFE;color:#534AB7;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:500;border:3px solid var(--color-background-primary);margin-top:-32px;margin-bottom:8px}
+.profile-name{font-size:18px;font-weight:500}
+.profile-handle{font-size:14px;color:var(--color-text-secondary)}
+.profile-bio{font-size:14px;color:var(--color-text-secondary);margin:6px 0}
+.profile-stats{display:flex;gap:1.5rem;margin-top:8px}
+.stat-num{font-size:15px;font-weight:500}
+.stat-lbl{font-size:13px;color:var(--color-text-secondary)}
+.profile-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:12px;    padding:4px 7px;
+
+border-radius:9px;}
+.tag-purple{background:white;color:black;border:1px solid #ddd; border-radius: 5px;}
+.tag-teal{background:white;color:black;border:1px solid #ddd; border-radius: 5px;}
+.wallet-row{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:13px;color:var(--color-text-secondary)}
+.wallet-addr{font-family:var(--font-mono);font-size:12px;background:var(--color-background-secondary);padding:3px 8px;border-radius:6px;color:var(--color-text-secondary)}
+.hidden{display:none!important}
+.notify-dot{width:8px;height:8px;background:#E24B4A;border-radius:50%;display:inline-block;margin-left:4px;vertical-align:middle}
+.top-token-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.top-token-item:last-child{border-bottom:none}
+.token-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500}
+.ti-hunter{background:#EEEDFE;color:#534AB7}
+.ti-beast{background:#E1F5EE;color:#0F6E56}
+.ti-relic{background:#FAECE7;color:#993C1D}
+.token-info-name{font-size:13px;font-weight:500}
+.token-info-tick{font-size:12px;color:var(--color-text-tertiary)}
+.token-price{margin-left:auto;text-align:right}
+.token-price-val{font-size:13px;font-weight:500}
+.token-price-chg.up{font-size:11px;color:#0F6E56}
+.token-price-chg.dn{font-size:11px;color:#A32D2D}
+.brand-logo{
+    width:40px;
+    height:40px;
+    flex-shrink:0;
+}
+
+.brand-logo img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+.settings-profile{
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+
+.settings-avatar{
+    width:100px;
+    height:100px;
+    border-radius:50%;
+    overflow:hidden;
+    border:2px solid #ddd;
+}
+
+.settings-avatar img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.btn-upload-photo{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:10px 16px;
+    background:#1D9E75;
+    color:#fff;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.profile-avatar-lg{
+  position: relative;
+  z-index: 10;
+  border: 3px solid #fff;
+}
+
+</style>
+
+
+<body>
+
+
+<!-- Hunters — Social.fi platform interface with NFT posts, token creation, and profile management -->
+
+<div class="app" id="app">
+  <div class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-icon">
+        
+        <img src="Logo/Hunters.png" alt="Hunters" class="brand-logo"></div>
+     
+    </div>
+    <div class="nav-item active" onclick="showPage('feed', this)"><i class="ti ti-home" aria-hidden="true"></i> Home</div>
+    <div class="nav-item" onclick="showPage('explore')"><i class="ti ti-compass" aria-hidden="true"></i> Explore</div>
+    <div class="nav-item" onclick="showPage('nft')"><i class="ti ti-diamond" aria-hidden="true"></i> NFT</div>
+    <div class="nav-item" onclick="showPage('tokens')"><i class="ti ti-currency-ethereum" aria-hidden="true"></i> Tokens <span class="notify-dot"></span></div>
+    <div class="nav-item" onclick="showPage('profile')"><i class="ti ti-user-circle" aria-hidden="true"></i> Profile</div>
+    <div class="nav-item"><i class="ti ti-bell" aria-hidden="true"></i> Notifications</div>
+    <div class="nav-item" onclick="showPage('setting')"><i class="ti ti-settings" aria-hidden="true"></i> Settings</div>
+    <div class="sidebar-bottom">
+      <button  type="button" class="btn-post" onclick="showCompose()"><i class="ti ti-feather" aria-hidden="true"></i> Post</button>
+      <div class="profile-pill" onclick="showPage('profile')">
+        <div
+    class="avatar av-purple"
+    id="sidebarAvatar"
+>
+HX
+</div>
+        <div style="flex:1;min-width:0">
+
+          <div
+              id="sidebarName"
+              style="font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"
+          ></div>
+      
+          <div
+              id="sidebarUsername"
+              style="font-size:12px;color:var(--color-text-tertiary)"
+          ></div>
+      
+      
+        </div>
+        
+        <div class="profile-menu">
+
+          <i
+              class="ti ti-dots"
+              onclick="toggleProfileMenu(event)"
+              style="font-size:16px;color:var(--color-text-tertiary);cursor:pointer"
+              aria-hidden="true">
+          </i>
+      
+          <div
+              id="profileDropdown"
+              class="profile-dropdown hidden">
+      
+              <div
+                  class="profile-dropdown-item"
+                  onclick="logout()">
+      
+                  <i class="ti ti-logout"></i>
+                  Logout
+      
+              </div>
+      
+          </div>
+      
+      </div>
+
+
+      </div>
+    </div>
+  </div>
+
+  <div class="main" id="main-content">
+    <!-- FEED PAGE -->
+    <div id="page-feed">
+      <div class="topbar">
+        <span class="page-title">Home</span>
+        
+        <div class="search-container">
+          <div class="search-box-Home">
+              <i class="ti ti-search"></i>
+      
+              <input
+                  type="text"
+                  id="hunterSearch"
+                  placeholder="Search Hunters..."
+              >
+          </div>
+      
+          <div id="searchResults"></div>
+      </div>
+        
+      </div>
+      <div class="compose-box">
+        <div class="compose-inner">
+          <div
+    class="avatar av-purple"
+    id="composeAvatar"
+    style="margin-top:4px"
+>
+    HX
+</div>
+          <div class="compose-input-area">
+            <textarea class="compose-textarea" id="compose-text" placeholder="What's happening on-chain?" rows="2"></textarea>
+            <div id="nft-attach-preview" class="hidden" style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:8px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+              <span id="nft-attach-label" style="font-size:13px;color:var(--color-text-secondary)"></span>
+              <span onclick="removeNFT()" style="cursor:pointer;color:var(--color-text-tertiary);font-size:18px"><i class="ti ti-x"></i></span>
+            </div>
+            <div id="token-attach-preview" class="hidden" style="background:rgba(185, 211, 192, 0.1);border:0.5px solid rgba(127,119,221,0.2);border-radius:var(--border-radius-md);padding:8px 12px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between">
+              <span id="token-attach-label" style="font-size:13px;color:#534AB7"></span>
+              <span onclick="removeToken()" style="cursor:pointer;color:var(--color-text-tertiary);font-size:18px"><i class="ti ti-x"></i></span>
+            </div>
+            <div class="compose-actions">
+              <button type="button" class="compose-btn" onclick="showNFTAttach()"><i class="ti ti-diamond" aria-hidden="true"></i> NFT</button>
+              <button type="button" class="compose-btn" onclick="showTokenCreate()"><i class="ti ti-coin" aria-hidden="true"></i> Token</button>
+              <button type="button" class="compose-btn"><i class="ti ti-photo" aria-hidden="true"></i> Media</button>
+              <button type="button" class="compose-btn"><i class="ti ti-chart-bar" aria-hidden="true"></i> Poll</button>
+              <button type="button" class="compose-submit" onclick="submitPost()">Post</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tab active" onclick="switchTab(this,'all')">For You</div>
+        <div class="tab" onclick="switchTab(this,'nft')">NFT Posts</div>
+        <div class="tab" onclick="switchTab(this,'token')">Token Posts</div>
+        <div class="tab" onclick="switchTab(this,'following')">Following</div>
+      </div>
+      <div class="feed" id="feed-list"></div>
+    </div>
+
+    <!-- NFT PAGE -->
+   <!-- NFT PAGE -->
+<div id="page-nft" class="hidden">
+
+  <!-- Topbar -->
+  <div  class="topbar">
+
+      <span class="page-title">
+          NFT Wallet
+      </span>
+      <button class="btn-post" style="width:auto;padding:7px 16px;font-size:14px" onclick="openImportNFTModal()">
+        <i class="ti ti-plus"></i> Import NFT
+      </button>
+
+      <!-- <button
+          class="wallet-import-btn"
+          onclick="openImportNFTModal()">
+
+          <i class="ti ti-download"></i>
+
+          Import NFT
+
+      </button> -->
+
+  </div>
+
+  
+
+  <!-- NFT LIST -->
+  <div
+      id="wallet-nft-grid"
+      class="wallet-grid">
+
+      <!-- render otomatis -->
+
+  </div>
+
+</div>
+<!-- TOKENS PAGE -->
+<div id="page-tokens" class="hidden">
+  <div class="topbar">
+    <span class="page-title">Tokens</span>
+    <button class="btn-post" style="width:auto;padding:7px 16px;font-size:14px" onclick="showTokenCreate()">
+      <i class="ti ti-plus"></i> Create Token
+    </button>
+  </div>
+  <div style="padding:1.5rem">
+
+    <!-- ADDRESS BANNER -->
+    <div style="background:#f5f5f7;border:0.5px solid #ececec;border-radius:10px;padding:10px 14px;margin-bottom:1rem;display:flex;align-items:center;gap:8px;font-size:13px;color:#666">
+      <i class="ti ti-wallet" style="font-size:16px;color:#1D9E75"></i>
+      Canopy Address:
+      <span id="tokens-wallet-display" style="font-family:monospace;font-size:12px;background:#fff;border:0.5px solid #ddd;padding:3px 8px;border-radius:6px;color:#333">-</span>
+      <span id="tokens-network-badge" style="margin-left:auto;font-size:11px;background:#E1F5EE;color:#0F6E56;padding:2px 8px;border-radius:20px">Canopy Testnet</span>
+    </div>
+
+    <!-- HOLDINGS CARD -->
+
+    
+    <div class="panel-card" style="margin-bottom:1rem">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div class="panel-title" style="margin-bottom:0">Your Holdings</div>
+        <button onclick="refreshTokenData()" id="btn-refresh-tokens"
+          style="font-size:12px;padding:4px 10px;border:0.5px solid #ddd;border-radius:20px;background:transparent;cursor:pointer;display:flex;align-items:center;gap:4px">
+          <i class="ti ti-refresh" id="refresh-icon"></i> Refresh
+        </button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+        <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:center">
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px">Balance</div>
+          <div style="font-size:20px;font-weight:500" id="token-balance-display">—</div>
+          <div style="font-size:12px;color:var(--color-text-tertiary)">uCNP</div>
+        </div>
+        <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:center">
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px">Chain</div>
+          <div style="font-size:14px;font-weight:500" id="token-chain-display">—</div>
+          <div style="font-size:12px;color:var(--color-text-tertiary)" id="token-symbol-display">—</div>
+        </div>
+        <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:center">
+          <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:4px">Block</div>
+          <div style="font-size:14px;font-weight:500" id="token-block-display">—</div>
+          <div style="font-size:12px;color:var(--color-text-tertiary)">latest</div>
+        </div>
+      </div>
+      <!-- status/error -->
+      <div id="token-fetch-status" style="margin-top:10px;font-size:12px;color:#999;text-align:center;display:none"></div>
+    </div>
+
+    <div
+    style="
+      background: white;
+      border:1px solid #ddd;
+      border-radius:10px;
+      padding:12px;
+      margin-bottom:1rem;
+      text-align:center;
+      
+    "
+  >
+  
+    <div
+      style="
+      
+        font-size:13px;
+        margin-bottom:10px;
+        color:#0b0c0c;
+      "
+    >
+      Need testnet tokens?
+    </div>
+  
+    <button
+      onclick="requestFaucet()"
+      class="btn-post"
+      style="
+        width:auto;
+    color: #000;
+        background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;text-align:center
+        
+      "
+    >
+      💧 Request Testnet Tokens
+    </button>
+  
+  </div>
+
+    <!-- TRENDING (tetap static untuk sekarang) -->
+    <div class="panel-card">
+      <div class="panel-title" ></div>
+      <div id="my-token-list"></div>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
+    <!-- EXPLORE PAGE -->
+    <div id="page-explore" class="hidden">
+      <div class="topbar"><span class="page-title">Explore</span><div class="search-box"><i class="ti ti-search" style="font-size:15px"></i> Search...</div></div>
+      <div style="padding:1.5rem;color:var(--color-text-secondary);text-align:center;padding-top:4rem">
+        <i class="ti ti-compass" style="font-size:48px;opacity:.3"></i>
+        <p style="margin-top:1rem">Explore coming soon</p>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div id="page-profile" class="hidden">
+      <div class="topbar"><span class="page-title">Profile</span><button
+        style="padding:6px 14px;border:0.5px solid var(--color-border-secondary);background:transparent;border-radius:20px;font-size:13px;cursor:pointer;color:var(--color-text-primary)"
+        onclick="openEditProfile()"
+        >
+        Edit profile
+        </button></div>
+      <div class="profile-page">
+
+
+
+        <div class="profile-cover" id="profileCover">
+          <button type="button" class="edit-cover-btn" onclick="document.getElementById('coverUpload').click()">
+            <i class="ti ti-photo-edit"></i>
+          </button>
+        
+          <input
+            type="file"
+            id="coverUpload"
+            accept="image/*"
+            hidden
+          >
+        </div>
+
+        
+        <div class="profile-info-row">
+          <div
+          class="profile-avatar-lg"
+          id="profileAvatarLg"
+      >
+
+
+
+          HX
+      </div>
+
+      <input type="file" id="profilePhotoUploadPage" accept="image/*" hidden>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div class="profile-name" id="profileName"><span class="badge-verified"><i class="ti ti-check" style="font-size:10px"></i> Verified</span></div>
+              <div class="profile-handle" id="profileHandle"></div>
+            </div>
+          </div>
+          <div
+    class="profile-bio"
+    id="profileBio"
+>
+    On-chain hunter. NFT collector. Building in Web3. 🏹
+</div>
+
+<div id="followContainer"></div>
+
+          <div class="wallet-row">
+
+            <button id="connectWalletBtn" class="connect-wallet-btn">
+              <i class="ti ti-wallet"></i>
+              Connect Wallet
+            </button>
+
+
+          
+            <div id="walletInfo" class="wallet-info hidden">
+              <i class="ti ti-wallet"></i>
+              <span class="wallet-addr"></span>
+              <i class="ti ti-copy copy-wallet"></i>
+            </div>
+          
+          </div>
+
+          <div class="profile-stats">
+            <div>
+              <span class="stat-num" id="profilePostCount">1</span>
+              <span class="stat-lbl">Posts</span>
+          </div>
+            <div><span class="stat-num">2.4K</span> <span class="stat-lbl">Followers</span></div>
+            <div>
+              <span class="stat-num" id="followingCount">0</span>
+              <span class="stat-lbl">Following</span>
+            </div>
+            <div><span class="stat-num">7</span> <span class="stat-lbl">NFTs</span></div>
+          </div>
+          <div class="profile-tags">
+            <span class="tag tag-purple"><i class="ti ti-diamond" style="font-size:11px"></i> NFT Creator</span>
+            <span class="tag tag-teal"><i class="ti ti-coin" style="font-size:11px"></i> Token Holder</span>
+          </div>
+        </div>
+        <div class="tabs">
+          <div class="tab active">Posts</div>
+          <div class="tab">NFTs</div>
+          <div class="tab">Tokens</div>
+          <div class="tab">Likes</div>
+        </div>
+        <div class="feed" id="profile-feed"></div>
+      </div>
+    </div>
+
+
+
+
+  <!-- SETTINGS PAGE -->
+<div id="page-setting" class="hidden">
+
+  <div class="topbar">
+    <span class="page-title">Settings</span>
+  </div>
+
+  <div style="
+      padding:4rem 1.5rem;
+      text-align:center;
+      color:var(--color-text-secondary);
+  ">
+    <i class="ti ti-settings" style="font-size:60px;opacity:.3"></i>
+
+    <h2 style="margin-top:1rem;font-weight:500;color:var(--color-text-primary)">
+      Coming Soon
+    </h2>
+
+    <p style="margin-top:6px;font-size:14px">
+      Settings feature is under development
+    </p>
+  </div>
+
+
+
+</div>
+
+</div>
+
+<!-- change profile -->
+
+<div
+class="modal-overlay hidden"
+id="editProfileModal"
+>
+
+<div class="modal">
+
+  <button class="modal-close" onclick="closeEditProfile()">
+    <i class="ti ti-x"></i>
+  </button>
+
+<h3 style="margin-bottom:20px">
+Edit Profile
+</h3>
+
+<div
+class="profile-avatar-edit"
+id="editProfileAvatar"
+>
+HX
+</div>
+
+
+
+<button type="button"
+onclick="document.getElementById('profilePhotoUpload').click()"
+style="
+margin-bottom:20px;
+
+padding:8px 12px;
+
+border:1px solid #ddd;
+background: white;
+color:rgb(15, 14, 14);
+border-radius:8px;
+cursor:pointer;
+"
+>
+Change Photo
+</button>
+
+
+
+<div class="form-group">
+
+
+  <label class="form-label">
+    Display Name
+  </label>
+
+
+  
+
+  <input
+    type="text"
+    class="form-input"
+    id="editDisplayName"
+  >
+</div>
+
+<input
+type="file"
+id="profilePhotoUpload"
+accept="image/*"
+hidden
+>
+
+
+
+<div class="form-group">
+  <label class="form-label">
+    Username
+  </label>
+
+  <input
+    type="text"
+    class="form-input"
+    id="editUsername"
+  >
+</div>
+
+
+
+
+<div class="form-group">
+  <label class="form-label">
+    Bio
+  </label>
+
+  <textarea
+    id="editBio"
+    class="form-input"
+    style="height:100px"
+  ></textarea>
+</div>
+
+
+
+
+<button type="button"
+class="btn-primary"
+onclick="saveProfileChanges()"
+>
+Save Changes
+</button>
+
+</div>
+
+</div>
+
+
+  <div class="right-panel" id="right-panel">
+    <div class="panel-card">
+      <div class="panel-title">Trending tags</div>
+      <div class="trend-item"><div class="trend-tag">#HuntersNFT</div><div class="trend-count">1.2K posts</div></div>
+      <div class="trend-item"><div class="trend-tag">#CanopyChain</div><div class="trend-count">845 posts</div></div>
+      <div class="trend-item"><div class="trend-tag">#Web3Hunt</div><div class="trend-count">632 posts</div></div>
+      <div class="trend-item"><div class="trend-tag">#HUNT</div><div class="trend-count">411 posts</div></div>
+    </div>
+    <div class="panel-card">
+      <div class="panel-title">Who to follow</div>
+    
+      <div id="whoToFollowList"></div>
+
+      <div onclick="openProfile('${user.ethAddress}')" ></div>
+    
+    </div>
+    <div class="panel-card" style="font-size:12px;color:var(--color-text-tertiary);line-height:1.8">
+      <div style="margin-bottom:4px;font-size:13px;font-weight:500;color:var(--color-text-secondary)">Hunters · Social.fi</div>
+      Powered by Canopy Chain · Unix socket plugin<br>
+      © 2026 Hunters Protocol
+    </div>
+  </div>
+</div>
+
+<!-- Username Sign up -->
+
+
+<div class="modal-overlay hidden" id="username-modal">
+
+  <div class="modal">
+
+    <div class="modal-title">
+      Complete Your Profile
+    </div>
+
+    <div class="modal-sub">
+      Choose your Hunters identity
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        Display Name
+      </label>
+
+      <input
+        type="text"
+        class="form-input"
+        id="walletDisplayName"
+        placeholder="Display Name"
+      >
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">
+        Username
+      </label>
+
+      <input
+        type="text"
+        class="form-input"
+        id="walletUsername"
+        placeholder="Username"
+      >
+    </div>
+
+    <div style="text-align:center;margin-bottom:20px">
+
+      <img
+          id="signupPreview"
+          src="Logo/Hunters.png"
+          style="
+              width:100px;
+              height:100px;
+              border-radius:50%;
+              object-fit:cover;
+              border:2px solid #ddd;
+          "
+      >
+  
+      <br><br>
+  
+      <label
+          for="signupPhoto"
+          class="btn-upload-photo"
+      >
+          Upload Photo
+      </label>
+  
+      <input
+          type="file"
+          id="signupPhoto"
+          accept="image/*"
+          hidden
+      >
+  
+  </div>
+
+    <button
+      class="btn-primary"
+      onclick="finishWalletSignup()"
+    >
+      Create Account
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- load profile  -->
+
+
+
+<!-- AUTH MODAL -->
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+
+    <button class="modal-close" onclick="closeAuthModal()">
+      <i class="ti ti-x"></i>
+    </button>
+    <div class="modal-logo">
+
+      <img src="Logo/Hunters.png" alt="Hunters" class="brand-logo">
+
+    </div>
+    <div class="modal-title" id="auth-title">Welcome to Hunters</div>
+    <div class="modal-sub" id="auth-sub">Sign in to your on-chain social account</div>
+    <div id="auth-login-form">
+      <button class="btn-secondary-outline" onclick="connectWallet()"><i class="ti ti-wallet" style="font-size:16px;color:var(--h-accent)"></i> Connect Canopy Wallet</button>
+      <div class="divider"><hr><span>or</span><hr></div>
+      <div class="form-group"><label class="form-label">Username or wallet address</label><input class="form-input" type="text" placeholder="@hunter or cnp1q..."></div>
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="••••••••"></div>
+      <button class="btn-primary" onclick="doLogin()">Sign in</button>
+      <div class="modal-switch">No account? <span onclick="switchToSignup()">Create one</span></div>
+    </div>
+    <div id="auth-signup-form" class="hidden">
+      <div class="form-group"><label class="form-label">Display name</label><input class="form-input" type="text" placeholder="Hunter_X" id="signup-name"></div>
+      <div class="form-group"><label class="form-label">Username</label><input class="form-input" type="text" placeholder="@hunterx" id="signup-user"></div>
+      <!-- <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@hunters.fi"></div> -->
+      <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Min. 8 characters"></div>
+      <button class="btn-primary" onclick="doLogin()">Create account</button>
+      <button class="btn-secondary-outline" onclick="connectWallet()"><i class="ti ti-wallet" style="font-size:16px;color:var(--h-accent)"></i> Sign up with wallet</button>
+      <div class="modal-switch">Already a hunter? <span onclick="switchToLogin()">Sign in</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- NFT ATTACH MODAL -->
+<div class="modal-overlay hidden" id="nft-modal">
+  <div class="modal" style="width:480px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+      <div style="font-size:17px;font-weight:500">Attach NFT to post</div>
+      <span onclick="closeModal('nft-modal')" style="cursor:pointer;font-size:20px;color:var(--color-text-tertiary)"><i class="ti ti-x"></i></span>
+    </div>
+    <div class="nft-modal-grid">
+      <div class="nft-pick"
+      onclick="selectNFT(
+      this,
+      'monkey-hunter-001',
+      'Monkey Hunter #001',
+      '0.001 CNP',
+      '🐉',
+      'NFT/NFT-marketplace.jpg'
+      )">
+        <div class="nft-pick-img"><img class="nft-pick-img" src="NFT/NFT-marketplace.jpg" alt=""></div>
+        <div class="nft-pick-name">Monkey Hunter #001</div>
+        <div class="nft-pick-price">0.001 CNP</div>
+      </div>
+      <div class="nft-pick"
+      onclick="selectNFT(
+      this,
+      'no-game-no-life-042',
+      'No Game No Life #042',
+      '0.001 CNP',
+      '⚔️',
+      'NFT/NO GAME NO LIFE.jpg'
+      )">
+        <div class="nft-pick-img"><img class="nft-pick-img" src="NFT/NO GAME NO LIFE.jpg" alt=""></div>
+        <div class="nft-pick-name">No Game No Life #042</div>
+        <div class="nft-pick-price">0.001 CNP</div>
+      </div>
+      <div class="nft-pick"
+onclick="selectNFT(
+this,
+'shadow-hunter-007',
+'Shadow Hunter #007',
+'0.003 CNP',
+'🛡️',
+'NFT/photo_2026-06-24_12-15-16.jpg'
+)">
+        <div class="nft-pick-img"><img class="nft-pick-img" src="NFT/photo_2026-06-24_12-15-16.jpg" alt=""></div>
+        <div class="nft-pick-name">Shadow Hunter #007</div>
+        <div class="nft-pick-price">0.003 CNP</div>
+      </div>
+      <div class="nft-pick"
+onclick="selectNFT(
+this,
+'inkarnasi-015',
+'Inkarnasi #015',
+'0.002 CNP',
+'🦅',
+'NFT/zio2.jpg'
+)">
+        <div class="nft-pick-img"><img class="nft-pick-img" src="NFT/zio2.jpg" alt=""></div>
+        <div class="nft-pick-name">Inkarnasi #015</div>
+        <div class="nft-pick-price"> 0.002 CNP</div>
+      </div>
+    </div>
+    <button class="btn-primary" style="margin-top:.5rem" onclick="confirmNFT()">Attach NFT</button>
+  </div>
+</div>
+
+<!-- TOKEN CREATE MODAL -->
+<div class="modal-overlay hidden" id="token-modal">
+  <div class="modal" style="width:480px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+      <div style="font-size:17px;font-weight:500">Create & post a token</div>
+      <span onclick="closeModal('token-modal')" style="cursor:pointer;font-size:20px;color:var(--color-text-tertiary)"><i class="ti ti-x"></i></span>
+    </div>
+    <div class="token-logo-box">
+
+      <img
+        id="tok-logo-preview"
+        src="Logo/Hunters.png"
+        alt="Token Logo"
+      >
+    
+      <input
+        type="file"
+        id="tok-logo"
+        accept="image/*"
+        hidden
+      >
+    
+      <button
+        type="button"
+        class="form-label2"
+        onclick="document.getElementById('tok-logo').click()"
+      >
+        Upload Logo
+      </button>
+    
+    </div>
+    <div class="token-modal-fields">
+      <div class="form-group"><label class="form-label">Token name</label><input class="form-input" type="text" placeholder="HunterToken" id="tok-name"></div>
+      <div class="form-group"><label class="form-label">Ticker</label><input class="form-input" type="text" placeholder="$HUNT" id="tok-tick"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Total supply</label><input class="form-input" type="number" placeholder="1,000,000" id="tok-supply" style="width:100%"></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea id="tokenDescription"class="form-input" rows="2" placeholder="What's your token for?" style="resize:none;height:56px;width:100%"></textarea>
+    </div>
+
+    <div style="background:rgba(127,119,221,0.08);border:0.5px solid rgba(127,119,221,0.2);border-radius:var(--border-radius-md);padding:10px 14px;font-size:13px;color:#534AB7;margin-bottom:1rem">
+      <i class="ti ti-info-circle" style="font-size:15px;vertical-align:-2px"></i> Token Fee:
+      <span id="token-fee">
+        11000 uCNP.</span> Token will be created on Canopy chain and post will appear in feed automatically.
+    </div>
+
+    <button class="btn-primary" onclick="confirmToken()">Create token & post</button>
+  </div>
+</div>
+
+
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
+
+<script>
+
+const posts=[
+ 
+];
+
+
+
+document
+.getElementById(
+    "connectWalletBtn"
+)
+.addEventListener(
+    "click",
+    connectWallet
+);
+document
+.querySelector(".copy-wallet")
+.addEventListener(
+    "click",
+    async ()=>{
+
+        const user = JSON.parse(
+            localStorage.getItem(
+                "hunter_user_" + userAddress
+            )
+        );
+
+        if(!user?.canopyAddress)
+            return;
+
+        await navigator.clipboard.writeText(
+            user.canopyAddress
+        );
+
+        alert("Canopy address copied");
+    }
+);
+document.addEventListener("keydown", function(e){
+
+if(e.key === "Escape"){
+  closeAuthModal();
+}
+
+});
+
+
+function checkAuth(){
+  const saved = localStorage.getItem("hunter_logged_in");
+  return !!saved;
+}
+
+window.addEventListener("load", async () => {
+
+const savedAddress = localStorage.getItem("hunter_logged_in");
+
+if(!savedAddress){
+  document.getElementById("auth-modal")?.classList.remove("hidden");
+  return;
+}
+
+userAddress = savedAddress;
+
+const user = JSON.parse(
+  localStorage.getItem("hunter_user_" + userAddress)
+);
+
+if(user){
+
+  loadUserProfile();
+  updateWalletUI(user.canopyAddress || userAddress);
+
+  
+
+  document.getElementById("auth-modal")?.classList.add("hidden");
+
+  console.log("AUTO LOGIN SUCCESS");
+
+  await loadPosts();
+  await loadMyTokens();
+  await loadMyNFTs();
+
+}
+
+
+loadWhoToFollow();
+
+});
+
+function renderFeed(list, target) {
+
+const el = document.getElementById(
+    target || "feed-list"
+);
+
+console.log("ALL POSTS =", list);
+
+el.innerHTML = list.map(p => {
+  console.log("SELECTED NFT =", selectedNFT);
+    console.log("POST =", p);
+    console.log("NFT =", p.nft);
+
+    return `
+
+<div class="post">
+
+<div class="post-header">
+
+${
+    p.photo
+    ?
+
+    `
+    <div class="avatar">
+
+        <img
+            src="${toUrl(p.photo)}"
+            style="
+                width:100%;
+                height:100%;
+                object-fit:cover;
+                border-radius:50%;
+            "
+        >
+
+    </div>
+    `
+
+    :
+
+    `
+    <div class="avatar ${p.av || "av-purple"}">
+        ${p.init || "H"}
+    </div>
+    `
+}
+
+<div class="post-meta">
+
+    <span class="post-name">
+        ${p.user}
+    </span>
+
+    <span class="post-time">
+        ${p.time} ago
+    </span>
+
+    <button
+        class="hunter-menu-btn"
+        onclick="togglePostMenu(event,${p.id})">
+
+        <i class="ti ti-dots"></i>
+
+    </button>
+
+    <div
+        class="hunter-post-dropdown"
+        id="post-menu-${p.id}">
+
+        <button
+            class="hunter-delete-btn"
+            onclick="deletePost(${p.id})">
+
+            <i class="ti ti-trash"></i>
+
+            Delete Post
+
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+<div class="post-text">
+${p.text}
+</div>
+
+${
+p.token
+?
+
+`
+<div class="token-badge">
+
+    <i class="ti ti-coin"
+       style="font-size:13px"></i>
+
+    ${p.token.name}
+
+    <span
+    style="
+        font-family:var(--font-mono);
+        font-size:11px
+    ">
+        ${p.token.tick}
+    </span>
+
+    · ${p.token.supply} supply
+
+</div>
+`
+
+:
+
+""
+}
+
+${
+p.nft
+?
+
+
+(() => {
+
+console.log("========== NFT ==========");
+console.log(p.nft);
+console.log("tokenId =", p.nft.tokenId);
+
+return `
+
+<div class="nft-card">
+
+<div class="nft-img" style="height:160px">
+
+    <img
+        src="${p.nft.image}"
+        style="
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            border-radius:12px;
+        "
+    >
+
+</div>
+
+<div class="nft-lock">
+
+    <div class="nft-text">
+
+        <div class="nft-name">
+            ${p.nft.name}
+        </div>
+
+        <div class="nft-price">
+            ${p.nft.price}
+        </div>
+
+    </div>
+
+    ${
+        p.nft.bought
+        ?
+        `
+        <button class="buyNFTBtn doneBtn" disabled>
+            <i class="ti ti-check"></i>
+            Done
+        </button>
+        `
+        :
+        `
+        <button
+            class="buyNFTBtn"
+            onclick="buyNFT('${p.nft.tokenId}', ${p.id})">
+            Mint NFT
+        </button>
+        `
+    }
+
+</div>
+
+</div>
+
+`;
+
+})()
+
+:
+
+""
+}
+
+<div class="post-actions">
+
+<span
+    class="action-btn${p.liked ? " liked" : ""}"
+    onclick="toggleLike(${p.id})">
+
+    <i class="ti ti-heart${p.liked ? "-filled" : ""}"></i>
+
+    ${p.likes}
+
+</span>
+
+<span class="action-btn">
+    <i class="ti ti-message-circle"></i>
+    ${p.comments}
+</span>
+
+<span class="action-btn">
+    <i class="ti ti-repeat"></i>
+    ${p.reposts}
+</span>
+
+<span class="action-btn">
+    <i class="ti ti-share"></i>
+</span>
+
+<span
+    class="action-btn"
+    style="margin-left:auto">
+
+    <i class="ti ti-bookmark"></i>
+
+</span>
+
+</div>
+
+</div>
+
+`;
+
+}).join("");
+
+}
+
+// function toggleLike(id){
+//   const p=posts.find(x=>x.id===id);
+//   p.liked=!p.liked;p.likes+=p.liked?1:-1;
+//   renderFeed(posts,'feed-list');
+//   if(document.getElementById('page-profile').classList.contains('hidden')===false)renderFeed(posts,'profile-feed');
+// }
+
+async function toggleLike(postId){
+
+if(!canopyAddress){
+
+    alert("Connect wallet first.");
+    return;
+
+}
+
+try{
+
+    const res = await fetch(
+        "http://localhost:3001/api/like-post",
+        {
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                postId,
+
+                liker: canopyAddress
+
+            })
+
+        }
+    );
+
+    const data = await res.json();
+
+    if(!data.success){
+
+        alert(data.message);
+        return;
+
+    }
+
+    await loadPosts();
+
+}
+
+catch(err){
+
+    console.error(err);
+
+}
+
+}
+
+async function buyNFT(tokenId, postId){
+
+console.log("BUY NFT DIPANGGIL");
+console.log("token =", tokenId);
+console.log("postId =", postId);
+console.log("canopyAddress =", canopyAddress);
+
+try{
+
+    const buyer =
+        canopyAddress ||
+        "28f0349fceaac2df4fc4e37b5e2bbd46e688d684";
+
+    const res = await fetch(
+        "http://localhost:3001/api/buy-nft",
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+
+                postId: postId,
+                tokenId: tokenId,
+                buyer: buyer
+
+            })
+        }
+    );
+
+    console.log("STATUS =",res.status);
+
+    const result = await res.json();
+
+    console.log(result);
+
+    if(!res.ok){
+
+        alert(result.error || "Buy NFT gagal");
+        return;
+
+    }
+
+    if(result.success || result.status==="success"){
+
+        // update data lokal
+        const post =
+            posts.find(
+                p=>p.id===postId
+            );
+
+        if(post && post.nft){
+
+            post.nft.bought=true;
+
+        }
+
+        // simpan status bought
+        await fetch(
+            "http://localhost:3001/api/posts/"+postId+"/bought",
+            {
+                method:"PUT"
+            }
+        );
+
+        renderFeed(posts,"feed-list");
+
+        alert("NFT berhasil dibeli!");
+
+    }
+
+}catch(err){
+
+    console.error(err);
+    alert(err.message);
+
+}
+
+}
+
+let selectedNFT = null;
+let selectedToken = null;
+
+
+
+
+// function renderMyTokens() {
+
+// const box =
+//   document.getElementById(
+//     "my-token-list"
+//   );
+
+// if (!box)
+//   return;
+
+// box.innerHTML = "";
+
+// userTokens.forEach(
+//   token => {
+
+//     const div =
+//       document.createElement(
+//         "div"
+//       );
+
+//     div.className =
+//       "token-card";
+
+//     div.innerHTML = `
+//     <div class="token-left">
+//       <img
+//         src="${
+//           token.logo ||
+//            'Logo/Hunters.png'
+//         }"
+//         class="token-logo"
+//       >
+// <div class="token-info">
+//         <div class="token-name">
+//             ${token.name}
+//         </div>
+
+//         <div class="token-symbol">
+//             ${token.symbol}
+//         </div>
+//     </div>
+
+// </div>
+
+// <div class="token-right">
+//     <div class="token-price">
+//         ${Number(token.supply).toLocaleString()}
+//     </div>
+
+//     <div class="token-change up">
+//         ▲ 0%
+//     </div>
+// </div>
+// `;
+
+//     box.appendChild(div);
+//   }
+// );
+// }
+let walletNFTs = [];
+
+function renderWalletNFTs(){
+
+    const grid =
+        document.getElementById("wallet-nft-grid");
+
+    grid.innerHTML = "";
+
+    if(walletNFTs.length===0){
+
+        grid.innerHTML=`
+
+            <div class="wallet-empty">
+
+                <i class="ti ti-photo-off"></i>
+
+                <h3>No NFT Found</h3>
+
+                <p>
+                    Import your NFT from Canopy.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+    
+
+    walletNFTs.forEach(nft => {
+
+const card = document.createElement("div");
+
+card.className = "wallet-card";
+
+card.innerHTML = `
+
+    <img
+        src="${nft.image}"
+        class="wallet-image"
+    >
+
+    <div class="wallet-body">
+
+        <div class="wallet-name">
+            ${nft.name}
+        </div>
+
+        <div class="wallet-id">
+            #${nft.tokenId}
+        </div>
+
+        ${
+            nft.staked
+            ?
+            `
+            <button
+                class="wallet-unstake-btn"
+                onclick="unstakeNFT('${nft.tokenId}')">
+
+                Unstake NFT
+
+            </button>
+            `
+            :
+            `
+            <button
+                class="wallet-stake-btn"
+                onclick="stakeNFT('${nft.tokenId}')">
+
+                Stake NFT
+
+            </button>
+            `
+        }
+
+    </div>
+
+`;
+
+grid.appendChild(card);
+
+});
+}
+
+let userTokens = [];
+
+function renderMyTokens() {
+
+const box = document.getElementById("my-token-list");
+
+if (!box) return;
+
+box.innerHTML = "";
+
+// Header
+const header = document.createElement("div");
+
+header.className = "token-header";
+
+header.innerHTML = `
+    <div class="token-header-title">
+        My Tokens
+    </div>
+
+    <button
+        class="send-token-btn"
+        onclick="openSendTokenModal()">
+
+        <i class="ti ti-send"></i>
+
+        Send Token
+
+    </button>
+`;
+
+box.appendChild(header);
+
+if(userTokens.length === 0){
+
+    box.innerHTML += `
+        <div style="
+            text-align:center;
+            color:#999;
+            padding:20px;
+        ">
+            No tokens found
+        </div>
+    `;
+
+    return;
+
+}
+
+userTokens.forEach(token => {
+
+const div = document.createElement("div");
+
+div.className = "token-card";
+
+div.innerHTML = `
+
+<div
+class="token-left"
+onclick="selectSendToken('${token.id}')"
+>
+
+<div class="token-icon">
+
+    <img
+        src="http://localhost:3001${token.logo}"
+        class="token-logo"
+    >
+
+</div>
+
+<div class="token-info">
+
+    <div class="token-name">
+
+        ${token.name}
+
+    </div>
+
+    <div class="token-symbol">
+
+        ${token.symbol}
+
+    </div>
+
+</div>
+
+</div>
+
+<div class="token-chart">
+
+<svg
+    viewBox="0 0 220 80"
+    class="chart-svg">
+
+    <defs>
+
+        <linearGradient
+            id="greenGradient-${token.id}"
+            x1="0"
+            y1="0"
+            x2="0"
+            y2="1">
+
+            <stop
+                offset="0%"
+                stop-color="#71ff5b"
+                stop-opacity="0.35"/>
+
+            <stop
+                offset="100%"
+                stop-color="#71ff5b"
+                stop-opacity="0"/>
+
+        </linearGradient>
+
+    </defs>
+
+    <path
+        d="
+        M10 65
+        L35 60
+        L55 42
+        L75 46
+        L95 28
+        L120 35
+        L145 18
+        L175 24
+        L205 8"
+        fill="none"
+        stroke="#6BFF57"
+        stroke-width="4"
+        stroke-linecap="round"
+        stroke-linejoin="round"/>
+
+    <path
+        d="
+        M10 65
+        L35 60
+        L55 42
+        L75 46
+        L95 28
+        L120 35
+        L145 18
+        L175 24
+        L205 8
+        L205 80
+        L10 80
+        Z"
+        fill="url(#greenGradient-${token.id})"/>
+
+    <circle
+        cx="205"
+        cy="8"
+        r="5"
+        fill="#6BFF57"/>
+
+</svg>
+
+</div>
+
+<div class="token-right">
+
+<div class="token-stat hidden" >
+
+    <div class="token-label">
+
+        Balance
+
+    </div>
+
+    <div class="token-value">
+
+        ${Number(token.balance).toLocaleString()}
+
+    </div>
+
+</div>
+
+<div class="token-stat">
+
+    <div class="token-label">
+
+        Balance
+
+    </div>
+
+    <div class="token-value reserve-value">
+
+        ${Number(token.reserve).toLocaleString()} 
+
+    </div>
+
+</div>
+
+</div>
+
+`;
+
+box.appendChild(div);
+
+});
+
+}
+
+
+let selectedSendToken = null;
+function selectSendToken(tokenId){
+
+selectedSendToken =
+    userTokens.find(t => t.id === tokenId);
+
+if(!selectedSendToken) return;
+
+document.getElementById("senderAddress").value =
+    selectedSendToken.treasuryAddress;
+
+updateSendTokenInfo();
+
+}
+function openSendTokenModal() {
+
+if (userTokens.length === 0) {
+
+    alert("You don't have any token.");
+
+    return;
+
+}
+
+const select =
+    document.getElementById("sendTokenSelect");
+
+select.innerHTML = "";
+
+userTokens.forEach(token => {
+
+    select.innerHTML += `
+        <option value="${token.id}">
+            ${token.name} (${token.symbol})
+        </option>
+    `;
+
+});
+
+// token pertama
+selectedSendToken = userTokens[0];
+
+// tampilkan info token
+updateSendTokenInfo();
+
+// sekarang sender adalah Treasury
+document.getElementById("senderAddress").value =
+    selectedSendToken.treasuryAddress;
+
+document
+    .getElementById("send-token-modal")
+    .classList.remove("hidden");
+
+}
+
+async function loadMyNFTs() {
+
+console.log("========== LOAD MY NFT ==========");
+console.log("userAddress =", userAddress);
+
+if (!userAddress) {
+    console.log("User belum login.");
+    return;
+}
+
+const grid = document.getElementById("wallet-nft-grid");
+
+if (!grid) {
+    console.error("wallet-nft-grid tidak ditemukan");
+    return;
+}
+
+// Loading
+grid.innerHTML = `
+    <div class="wallet-empty">
+        <i class="ti ti-loader-2" style="font-size:42px;animation:spin 1s linear infinite"></i>
+        <h3>Loading NFTs...</h3>
+    </div>
+`;
+
+try {
+
+    const res = await fetch(
+        "http://localhost:3001/api/my-nfts/" + userAddress
+    );
+
+    const data = await res.json();
+
+    console.log("MY NFT =", data);
+
+    grid.innerHTML = "";
+
+    if (!data.success || !data.nfts || data.nfts.length === 0) {
+
+        grid.innerHTML = `
+            <div class="wallet-empty">
+
+                <i class="ti ti-photo-off"></i>
+
+                <h3>No NFT Found</h3>
+
+                <p>
+                    You don't own any NFT yet.
+                </p>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    data.nfts.forEach(nft => {
+
+        grid.insertAdjacentHTML(
+            "beforeend",
+            `
+
+            <div class="wallet-card">
+
+                <div class="wallet-image-wrap">
+
+                    <img
+                        src="${nft.image}"
+                        class="wallet-image"
+                        loading="lazy"
+                        onerror="this.src='Logo/default-nft.png'"
+                    >
+
+  
+
+                </div>
+
+                <div class="wallet-body">
+
+                    <div class="wallet-name">
+                        ${nft.name}
+                    </div>
+
+                    <div class="wallet-token">
+                        #${nft.tokenId}
+                    </div>
+
+                    <div class="wallet-footer">
+
+    <button
+        class="wallet-stake-btn"
+        onclick="stakeNFT('${nft.tokenId}')">
+        <span>Stake NFT</span>
+
+    </button>
+
+</div>
+
+                </div>
+
+            </div>
+
+            `
+        );
+
+    });
+
+} catch (err) {
+
+    console.error(err);
+
+    grid.innerHTML = `
+        <div class="wallet-empty">
+
+            <i class="ti ti-alert-circle"></i>
+
+            <h3>Failed to load NFTs</h3>
+
+            <p>
+                ${err.message}
+            </p>
+
+        </div>
+    `;
+
+}
+
+}
+
+async function loadMyTokens() {
+
+try {
+
+    const ethAddress =
+        localStorage.getItem("hunter_logged_in");
+
+    if (!ethAddress) {
+
+        userTokens = [];
+
+        renderMyTokens();
+
+        return;
+
+    }
+
+    // ambil profile user
+    const profileRes = await fetch(
+        `http://localhost:3001/api/user/${ethAddress}`
+    );
+
+    const profile = await profileRes.json();
+
+    if (!profile.success) {
+
+        userTokens = [];
+
+        renderMyTokens();
+
+        return;
+
+    }
+
+    const canopyAddress =
+        profile.user.canopyAddress;
+
+    // ambil seluruh token milik user
+    const res = await fetch(
+
+        `http://localhost:3001/api/my-tokens/${canopyAddress}`
+
+    );
+
+    const data = await res.json();
+
+    if (!data.success) {
+
+        userTokens = [];
+
+        renderMyTokens();
+
+        return;
+
+    }
+
+    userTokens = data.tokens.map(token => ({
+
+        ...token,
+
+        balance:
+            Number(token.balance || 0),
+
+        reserve:
+            Number(token.reserve || 0)
+
+    }));
+
+    console.log(
+        "MY TOKENS:",
+        userTokens
+    );
+
+    renderMyTokens();
+
+}
+
+catch(err){
+
+    console.error(err);
+
+    userTokens = [];
+
+    renderMyTokens();
+
+}
+
+}
+
+function showNFTAttach(){document.getElementById('nft-modal').classList.remove('hidden')}
+function showTokenCreate(){document.getElementById('token-modal').classList.remove('hidden')}
+function closeModal(id){document.getElementById(id).classList.add('hidden')}
+
+
+
+
+
+function selectNFT(
+    el,
+    tokenId,
+    name,
+    price,
+    emoji,
+    image
+){
+
+    document
+        .querySelectorAll(".nft-pick")
+        .forEach(x=>x.classList.remove("selected"));
+
+    el.classList.add("selected");
+
+    selectedNFT = {
+
+        tokenId,
+
+        name,
+
+        price,
+
+        emoji,
+
+        image,
+
+        bg:""
+
+    };
+
+    console.log(selectedNFT);
+
+}
+
+function confirmNFT(){
+  if(!selectedNFT)return;
+  document.getElementById('nft-attach-preview').classList.remove('hidden');
+  document.getElementById('nft-attach-label').textContent='NFT: '+selectedNFT.emoji+' '+selectedNFT.name+' · '+selectedNFT.price;
+  closeModal('nft-modal');
+}
+
+function closeEditProfile(){
+  document.getElementById("editProfileModal").classList.add("hidden");
+}
+
+function removeNFT(){
+
+document
+    .getElementById("nft-attach-preview")
+    .classList.add("hidden");
+
+// jangan reset selectedNFT di sini
+// selectedNFT akan di-reset setelah POST berhasil
+
+}
+
+// async function confirmToken() {
+
+// try {
+
+//     console.log("========== CREATE TOKEN ==========");
+
+//     const name =
+//         document.getElementById("tok-name")
+//         .value.trim() || "MyToken";
+
+//     const symbol =
+//         document.getElementById("tok-tick")
+//         .value.trim() || "TKN";
+
+//     const supply =
+//         Number(
+//             document.getElementById("tok-supply").value
+//         ) || 1000000;
+
+//     const description =
+//         document.getElementById("tokenDescription")
+//         ?.value?.trim() || "";
+
+//     const wallet =
+//         localStorage.getItem("hunter_logged_in");
+
+//     if (!wallet) {
+//         throw new Error("Wallet belum login.");
+//     }
+
+//     const user =
+//         JSON.parse(
+//             localStorage.getItem(
+//                 "hunter_user_" + wallet
+//             )
+//         );
+
+//     if (!user) {
+//         throw new Error("User tidak ditemukan.");
+//     }
+
+//     const creator =
+//         "28f0349fceaac2df4fc4e37b5e2bbd46e688d684";
+
+//     const publicKey =
+//         "b6c4c4ad966daaf2bbb8adf4fd746729e4551545e184410a7ce569a3ddece3e17bcc467aa85533e062ebcfb4619bb6f4";
+
+//     const privateKey =
+//         "6facc160917e0730803c2bcf69819395e5225f377310602358776a0d2e8a040b";
+
+//     const payload = {
+
+//         creator,
+
+//         publicKey,
+
+//         privateKey,
+
+//         name,
+
+//         symbol,
+
+//         supply,
+
+//         logo: "icon/default-token.png",
+
+//         description
+
+//     };
+
+//     console.log("PAYLOAD");
+//     console.table(payload);
+
+//     console.log("SEND TO BACKEND...");
+
+//     const res =
+//             await fetch(
+//                 "http://localhost:3001/api/create-token",
+//                 {
+//                     method: "POST",
+//                     headers: {
+//                         "Content-Type": "application/json"
+//                     },
+//                     body: JSON.stringify(payload)
+//                 }
+//             );
+
+//         console.log("BACKEND STATUS:", res.status);
+
+//         const text = await res.text();
+
+//         console.log("BACKEND RAW RESPONSE");
+//         console.log(text);
+
+//         let response;
+
+//         try {
+
+//             response = JSON.parse(text);
+
+//         } catch (e) {
+
+//             console.error("JSON PARSE ERROR");
+//             console.error(e);
+
+//             throw new Error(
+//                 "Backend tidak mengembalikan JSON."
+//             );
+
+//         }
+
+//         console.log("BACKEND JSON");
+//         console.log(response);
+
+//         if (!res.ok) {
+
+//             throw new Error(
+//                 response.error ||
+//                 response.message ||
+//                 text
+//             );
+
+//         }
+
+//         if (!response.success) {
+
+//             throw new Error(
+//                 response.error ||
+//                 "Create token gagal."
+//             );
+
+//         }
+
+//         console.log("TOKEN CREATED");
+//         console.log(response);
+
+//         const newToken = {
+
+//             owner: creator,
+
+//             name: name,
+
+//             symbol: symbol,
+
+//             supply: supply,
+
+//             logo: "icon/default-token.png",
+
+//             description: description
+
+//         };
+
+//         userTokens.unshift(newToken);
+
+//         renderMyTokens();
+
+//         const key =
+//             `hunters_tokens_${creator}`;
+
+//         const tokens =
+//             JSON.parse(
+//                 localStorage.getItem(key) || "[]"
+//             );
+
+//         tokens.unshift(newToken);
+
+//         localStorage.setItem(
+//             key,
+//             JSON.stringify(tokens)
+//         );
+
+//         closeModal("token-modal");
+
+//         console.log("CREATE TOKEN FINISHED");
+
+//         alert("Token berhasil dibuat.");
+
+//     } catch (err) {
+
+//         console.error("========== CREATE TOKEN ERROR ==========");
+
+//         console.error(err);
+
+//         console.error(err.stack);
+
+//         alert(
+//             err.message ||
+//             "Create token gagal."
+//         );
+
+//     }
+
+// }
+
+
+async function confirmToken() {
+
+const name = document.getElementById("tok-name").value.trim();
+const symbol = document.getElementById("tok-tick").value.trim();
+const supply = Number(document.getElementById("tok-supply").value);
+const description = document.getElementById("tokenDescription").value.trim();
+
+const logoInput = document.getElementById("tok-logo");
+const logoFile = logoInput.files.length
+    ? logoInput.files[0]
+    : null;
+
+if (!name || !symbol || !supply) {
+    alert("Please complete all required fields.");
+    return;
+}
+
+// wallet ETH yang sedang login
+const ethAddress = localStorage.getItem("hunter_logged_in");
+
+if (!ethAddress) {
+    alert("Connect wallet first.");
+    return;
+}
+
+// ambil user terbaru dari backend
+const profileRes = await fetch(
+    `http://localhost:3001/api/user/${ethAddress}`
+);
+
+const profile = await profileRes.json();
+
+if (!profile.success) {
+    alert("User not found.");
+    return;
+}
+
+const creator = profile.user.canopyAddress;
+
+console.log("Creator :", creator);
+
+const formData = new FormData();
+
+formData.append("creator", creator);
+formData.append("name", name);
+formData.append("symbol", symbol.toUpperCase());
+formData.append("supply", supply);
+formData.append("description", description);
+
+if (logoFile) {
+    formData.append("logo", logoFile);
+}
+
+try {
+
+    const res = await fetch(
+        "http://localhost:3001/api/create-token",
+        {
+            method: "POST",
+            body: formData
+        }
+    );
+
+    const data = await res.json();
+
+    console.log(data);
+
+    if (!data.success) {
+        alert(data.message);
+        return;
+    }
+
+    console.log(
+    "Treasury:",
+    data.token.treasuryAddress
+);
+
+console.log(
+    "Faucet TX:",
+    data.token.faucetTx
+);
+
+alert(
+
+`Token created successfully!
+
+Treasury:
+${data.token.treasuryAddress}
+
+Initial Reserve:
+1000 CNP`
+
+);
+
+    await loadMyTokens();
+
+    closeModal("token-modal");
+
+    document.getElementById("tok-name").value = "";
+    document.getElementById("tok-tick").value = "";
+    document.getElementById("tok-supply").value = "";
+    document.getElementById("tokenDescription").value = "";
+    document.getElementById("tok-logo").value = "";
+
+    document.getElementById("tok-logo-preview").src =
+        "Logo/Hunters.png";
+
+} catch (err) {
+
+    console.error(err);
+    alert("Failed to create token.");
+
+}
+
+}
+let createTokenFee = 0;
+
+
+async function loadTokenFee() {
+
+  const res =
+    await fetch(
+      "http://localhost:3001/api/token-fee"
+    );
+
+  const data =
+    await res.json();
+
+  if (data.success) {
+    createTokenFee =
+      data.createTokenFee;
+  }
+}
+function removeToken(){selectedToken=null;document.getElementById('token-attach-preview').classList.add('hidden')}
+
+// ====================================
+// Backend API
+// ====================================
+
+const API = "http://localhost:3001";
+
+// ====================================
+// Feed
+// ====================================
+
+
+async function submitPost(){
+
+const txt =
+    document.getElementById("compose-text").value.trim();
+
+if(!txt && !selectedNFT && !selectedToken)
+    return;
+
+// Ambil data user yang sedang login
+const user = JSON.parse(
+    localStorage.getItem(
+        "hunter_user_" + userAddress
+    )
+);
+
+if(!user){
+    alert("User tidak ditemukan.");
+    return;
+}
+
+const newPost = {
+
+    id: Date.now(),
+
+    owner: userAddress,
+
+    user: user.name,
+
+    handle: user.username,
+
+    photo: user.photo || "",
+
+    av: "av-purple",
+
+    init: user.name
+        ? user.name.charAt(0).toUpperCase()
+        : "H",
+
+    time: "just now",
+
+    text: txt || "New on-chain post!",
+
+    nft: selectedNFT,
+
+    token: selectedToken,
+
+    likes: 0,
+
+    comments: 0,
+
+    reposts: 0,
+
+    liked: false
+
+};
+
+try{
+
+    const res = await fetch(API + "/posts",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify(newPost)
+    });
+
+    const result = await res.json();
+
+    if(result.success){
+
+        document.getElementById("compose-text").value = "";
+
+        removeNFT();
+        removeToken();
+
+
+        await loadPosts();
+
+        selectedNFT = null;
+        selectedToken = null;
+
+    }else{
+
+        alert("Failed to save post.");
+
+    }
+
+}catch(err){
+
+    console.error(err);
+
+    alert("Server error.");
+
+}
+
+}
+
+
+
+async function loadPosts(){
+
+  const res = await fetch(API + "/posts");
+
+const data = await res.json();
+
+posts.length = 0;
+
+posts.push(...data);
+
+renderFeed(posts,"feed-list");
+
+}
+
+function showPage(name, el){
+  ['feed','nft','tokens','explore','profile','setting']
+    .forEach(p => document.getElementById('page-'+p).classList.add('hidden'));
+
+  document.getElementById('page-'+name).classList.remove('hidden');
+
+  document.querySelectorAll('.nav-item')
+    .forEach(n => n.classList.remove('active'));
+
+  if(el) el.classList.add('active');
+
+  if(name === "profile"){
+
+const currentUser = JSON.parse(
+    localStorage.getItem("hunter_user_" + userAddress)
+);
+
+if(currentUser){
+    loadProfilePosts(currentUser.ethAddress);
+}
+
+}
+
+    if(name === "feed"){
+    loadPosts();
+}
+
+
+
+    if(name==='tokens'){
+  loadTokenPageData();
+}
+
+if(name === "nft"){
+
+loadMyNFTs();
+
+}
+}
+
+function switchTab(el,type){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  let filtered=posts;
+  if(type==='nft')filtered=posts.filter(p=>p.nft);
+  else if(type==='token')filtered=posts.filter(p=>p.token);
+  else if(type==='following')filtered=posts.filter(p=>p.user!=='Hunter_X');
+  renderFeed(filtered,'feed-list');
+}
+
+function doLogin(){
+  document.getElementById('auth-modal').classList.add('hidden');
+}
+
+function switchToSignup(){
+  document.getElementById('auth-login-form').classList.add('hidden');
+  document.getElementById('auth-signup-form').classList.remove('hidden');
+  document.getElementById('auth-title').textContent='Join Hunters';
+  document.getElementById('auth-sub').textContent='Create your on-chain identity';
+}
+
+function switchToLogin(){
+  document.getElementById('auth-signup-form').classList.add('hidden');
+  document.getElementById('auth-login-form').classList.remove('hidden');
+  document.getElementById('auth-title').textContent='Welcome to Hunters';
+  document.getElementById('auth-sub').textContent='Sign in to your on-chain social account';
+}
+
+function showCompose(){
+  showPage('feed');
+  document.getElementById('compose-text').focus();
+}
+
+function closeAuthModal(){
+  const modal = document.getElementById("auth-modal");
+
+  if(modal){
+    modal.classList.add("hidden");
+  }
+}
+
+
+let provider;
+let signer;
+let userAddress;
+
+// ═══════════════════════════════════════════
+// CANOPY TESTNET CONFIG
+// ═══════════════════════════════════════════
+const CANOPY_RPC = "http://localhost:50002"; // ganti URL testnet kamu di sini
+let canopyAddress = null; // address Canopy yang sedang login
+
+
+
+// photo profile sementara
+let signupPhoto = "";
+
+async function connectWallet(){
+
+try{
+
+    provider =
+    new ethers.BrowserProvider(
+        window.ethereum
+    );
+
+    await provider.send(
+        "eth_requestAccounts",
+        []
+    );
+
+    signer =
+    await provider.getSigner();
+
+    userAddress =
+    await signer.getAddress();
+
+    const res = 
+await fetch(
+  "http://localhost:3001/api/login",
+  {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      ethAddress:userAddress
+    })
+  }
+);
+
+const data =
+await res.json();
+
+console.log(
+  "LOGIN RESPONSE:",
+  data
+);
+
+if(!data.success){
+
+  alert(
+    data.error ||
+    "Login gagal"
+  );
+
+  return;
+}
+
+const user =
+data.user;
+
+if(!user){
+
+  alert(
+    "User tidak ditemukan"
+  );
+
+  return;
+}
+
+
+/* =========================
+   FIX TAMBAHAN (SYNC PROFILE FROM SERVER)
+========================= */
+try {
+
+  const profileRes = await fetch(
+    `http://localhost:3001/api/user/${userAddress}`
+  );
+
+  const profileData = await profileRes.json();
+
+  if(profileData.success && profileData.user){
+
+    // merge server profile + login data
+    Object.assign(user, profileData.user);
+
+  }
+
+} catch(err){
+  console.log("Profile sync failed:", err);
+}
+
+/* =========================
+   ORIGINAL LOGIC (TETAP DIPERTAHANKAN)
+========================= */
+
+localStorage.setItem(
+  "hunter_user_" + userAddress,
+  JSON.stringify(user)
+);
+
+localStorage.setItem(
+  "hunter_logged_in",
+  userAddress
+);
+
+document
+.getElementById("auth-modal")
+?.classList.add("hidden");
+
+loadUserProfile();
+
+updateWalletUI(
+  user.canopyAddress
+);
+
+// Simpan canopy address dari data user server
+if(user.canopyAddress){
+  canopyAddress = user.canopyAddress;
+}
+
+}catch(err){
+
+  loadWhoToFollow();
+
+console.error(err);
+
+alert(
+  "Wallet login failed"
+);
+
+}
+
+}
+
+
+
+
+function openImportNFTModal() {
+
+console.log("OPEN MODAL");
+
+document
+    .getElementById("import-nft-modal")
+    .classList.remove("hidden");
+
+}
+
+function closeImportNFTModal() {
+
+document
+    .getElementById("import-nft-modal")
+    .classList.add("hidden");
+
+}
+
+async function finishWalletSignup(){
+
+const name = document.getElementById("walletDisplayName").value.trim();
+const username = document.getElementById("walletUsername").value.trim();
+
+if(!name || !username){
+  alert("Lengkapi data terlebih dahulu");
+  return;
+}
+
+const user = {
+  name: name,
+  username: "@" + username,
+  wallet: userAddress,
+  photo: signupPhoto
+};
+
+localStorage.setItem(
+  "hunter_user_" + userAddress,
+  JSON.stringify(user)
+);
+
+await fetch(
+  "http://localhost:3001/api/update-profile",
+  {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      ethAddress:userAddress,
+      name:user.name,
+      username:user.username,
+      bio:user.bio || ""
+    })
+  }
+);
+
+// ❌ FIX: pakai user bukan savedUser
+document.getElementById("sidebarName").textContent = user.name;
+document.getElementById("sidebarUsername").textContent = user.username;
+
+document.getElementById("username-modal").classList.add("hidden");
+document.getElementById("auth-modal").classList.add("hidden");
+
+loadUserProfile();
+
+alert("Account Created Successfully");
+}
+
+const API_BASE = "http://localhost:3001";
+
+function toUrl(path){
+  if(!path) return "";
+  if(path.startsWith("http")) return path;
+  return API_BASE + path;
+}
+
+async function stakeNFT(tokenId){
+
+try{
+
+    const res = await fetch("http://localhost:8081/stake",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+            tokenId
+        })
+
+    });
+
+    const result = await res.json();
+
+    console.log(result);
+
+    if(result.status==="success"){
+
+        alert("NFT berhasil di-stake.");
+
+        loadMyNFTs();
+
+    }else{
+
+        alert(result.error || "Stake gagal");
+
+    }
+
+}catch(err){
+
+    console.error(err);
+
+    alert("Tidak dapat terhubung ke server.");
+
+}
+
+}
+
+
+async function unstakeNFT(tokenId){
+
+try{
+
+    const res = await fetch("http://localhost:8081/unstake",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify({
+            tokenId
+        })
+
+    });
+
+    const result = await res.json();
+
+    console.log(result);
+
+    if(result.status==="success"){
+
+        alert("NFT berhasil di-unstake.");
+
+        loadMyNFTs();
+
+    }else{
+
+        alert(result.error || "Unstake gagal");
+
+    }
+
+}catch(err){
+
+    console.error(err);
+
+    alert("Tidak dapat terhubung ke server.");
+
+}
+
+}
+
+async function uploadPhotoToServer(file){
+  const form = new FormData();
+  form.append("photo", file);
+  form.append("ethAddress", userAddress);
+
+  const res = await fetch("http://localhost:3001/api/upload-avatar", {
+    method: "POST",
+    body: form
+  });
+
+  return await res.json();
+}
+async function uploadCoverToServer(file){
+  const form = new FormData();
+  form.append("cover", file);
+  form.append("ethAddress", userAddress);
+
+  const res = await fetch("http://localhost:3001/api/upload-cover", {
+    method: "POST",
+    body: form
+  });
+
+  return await res.json();
+}
+
+function loadUserProfile(){
+
+const raw =
+localStorage.getItem(
+  "hunter_user_" + userAddress
+);
+
+if(
+  !raw ||
+  raw === "undefined"
+){
+  return;
+}
+
+const user =
+JSON.parse(raw);
+
+document.getElementById(
+  "sidebarName"
+).textContent =
+user.name || "Hunter";
+
+document.getElementById(
+  "sidebarUsername"
+).textContent =
+user.username || "@hunter";
+
+
+
+document.getElementById(
+  "profileName"
+).innerHTML =
+(user.name || "Hunter") +
+`
+<span class="badge-verified">
+<i class="ti ti-check"></i>
+Verified
+</span>
+`;
+
+document.getElementById(
+  "profileHandle"
+).textContent =
+user.username || "@hunter";
+
+document.getElementById(
+  "profileBio"
+).textContent =
+user.bio ||
+"On-chain hunter.";
+
+if(user.photo){
+
+document.getElementById(
+  "signupPreview"
+).src =
+toUrl(user.photo);
+
+document.getElementById(
+  "editProfileAvatar"
+).innerHTML =
+`
+<img src="${toUrl(user.photo)}"
+  style="
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:50%;
+  "
+>
+`;
+
+document.getElementById(
+  "sidebarAvatar"
+).innerHTML =
+`
+<img src="${toUrl(user.photo)}"
+  style="
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:50%;
+  "
+>
+`;
+
+document.getElementById(
+  "composeAvatar"
+).innerHTML =
+`
+<img src="${toUrl(user.photo)}"
+  style="
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:50%;
+  "
+>
+`;
+
+document.getElementById(
+  "profileAvatarLg"
+).innerHTML =
+`
+<img src="${toUrl(user.photo)}"
+  style="
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:50%;
+  "
+>
+`;
+
+}
+
+if(user.cover){
+
+const cover =
+document.getElementById(
+  "profileCover"
+);
+
+cover.style.backgroundImage =
+`url('${toUrl(user.cover)}')`;
+
+cover.style.backgroundSize =
+"cover";
+
+cover.style.backgroundPosition =
+"center";
+
+cover.style.backgroundRepeat =
+"no-repeat";
+
+}
+
+updateFollowingCount();
+
+console.log(
+  "LOAD PROFILE",
+  JSON.parse(
+    localStorage.getItem(
+      "hunter_user_" + userAddress
+    )
+  )
+);
+}
+function updateWalletUI(address){
+
+if(!address) return;
+
+const shortAddress =
+  address.substring(0,6) +
+  "..." +
+  address.substring(address.length - 4);
+
+const walletEl = document.querySelector(".wallet-addr");
+
+if(walletEl){
+  walletEl.textContent = shortAddress;
+}
+
+document.getElementById("connectWalletBtn")?.classList.add("hidden");
+document.getElementById("walletInfo")?.classList.remove("hidden");
+}
+
+
+document.getElementById("coverUpload").addEventListener(
+"change",
+async function(e){
+  e.preventDefault();
+  e.stopPropagation();
+
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const res = await uploadCoverToServer(file);
+
+  if(!res.success){
+    alert("Upload cover gagal");
+    return;
+  }
+
+  const user = JSON.parse(localStorage.getItem("hunter_user_" + userAddress));
+  user.cover = res.cover;
+  localStorage.setItem("hunter_user_" + userAddress, JSON.stringify(user));
+
+  // 🔥 UPDATE UI TANPA RELOAD
+  const cover = document.getElementById("profileCover");
+
+  cover.style.backgroundImage = `url('${toUrl(user.cover)}')`;
+  cover.style.backgroundSize = "cover";
+  cover.style.backgroundPosition = "center";
+  cover.style.backgroundRepeat = "no-repeat";
+
+});
+
+
+
+function toggleProfileMenu(event){
+
+event.stopPropagation();
+
+document
+.getElementById("profileDropdown")
+.classList.toggle("hidden");
+
+}
+
+document.addEventListener(
+"click",
+function(){
+
+    document
+    .getElementById("profileDropdown")
+    .classList.add("hidden");
+
+}
+);
+
+
+function logout(){
+
+localStorage.removeItem(
+  "hunter_logged_in"
+);
+
+canopyAddress = null;
+userAddress = null;
+signer = null;
+provider = null;
+
+document
+  .getElementById("walletInfo")
+  ?.classList.add("hidden");
+
+document
+  .getElementById("connectWalletBtn")
+  ?.classList.remove("hidden");
+
+document
+  .getElementById("auth-modal")
+  ?.classList.remove("hidden");
+
+document.getElementById(
+  "tokens-wallet-display"
+).textContent = "-";
+
+document.getElementById(
+  "token-balance-display"
+).textContent = "—";
+
+document.getElementById(
+  "token-chain-display"
+).textContent = "—";
+
+document.getElementById(
+  "token-block-display"
+).textContent = "—";
+
+const logoInput =
+  document.getElementById("tok-logo");
+
+const logoPreview =
+  document.getElementById("tok-logo-preview");
+
+showPage("feed");
+}
+
+// change profile 
+
+function openEditProfile(){
+
+const user =
+JSON.parse(
+localStorage.getItem(
+"hunter_user_" + userAddress
+)
+);
+
+if(!user) return;
+
+document.getElementById(
+"editDisplayName"
+).value = user.name || "";
+
+document.getElementById(
+"editUsername"
+).value =
+(user.username || "")
+.replace("@","");
+
+document.getElementById(
+"editBio"
+).value =
+user.bio ||
+"On-chain hunter. NFT collector. Building in Web3.";
+
+document.getElementById(
+"editProfileModal"
+).classList.remove("hidden");
+
+}
+
+// Fauce 
+
+async function requestFaucet(){
+
+const user =
+JSON.parse(
+  localStorage.getItem(
+    "hunter_user_" + userAddress
+  )
+);
+
+
+try{
+
+  const res =
+  await fetch(
+    "http://localhost:3001/api/faucet",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        address:user.canopyAddress
+      })
+    }
+  );
+
+  const data =
+  await res.json();
+
+  if(!data.success){
+    throw new Error(
+      data.error
+    );
+  }
+
+  alert(
+    "💧 Faucet berhasil dikirim.\nTunggu ±24 detik lalu refresh."
+  );
+
+  setTimeout(
+    loadTokenPageData,
+    25000
+  );
+
+}
+catch(err){
+
+  console.error(err);
+
+  alert(
+    "Faucet gagal:\n" +
+    err.message
+  );
+
+}
+
+}
+// follow 
+
+function renderFollowButton(profileUser){
+
+const current = JSON.parse(
+  localStorage.getItem("hunter_user_" + userAddress)
+);
+
+const el = document.getElementById("followContainer");
+
+if(!el) return;
+
+// kalau profile sendiri → tidak ada tombol
+if(current.ethAddress === profileUser.ethAddress){
+  el.innerHTML = "";
+  return;
+}
+
+// cek apakah sudah follow
+const following = current.following || [];
+
+const isFollowing = following.includes(profileUser.ethAddress);
+
+el.innerHTML = `
+  <button class="btn-follow" onclick="toggleFollow('${profileUser.ethAddress}')">
+    ${isFollowing ? "Unfollow" : "Follow"}
+  </button>
+`;
+}
+
+
+// buy nft 
+let currentWallet =
+"28f0349fceaac2df4fc4e37b5e2bbd46e688d684";
+
+
+function updateFollowingCount(){
+
+const user = JSON.parse(
+  localStorage.getItem(
+    "hunter_user_" + userAddress
+  )
+);
+
+const count =
+  user?.following?.length || 0;
+
+const el =
+  document.getElementById(
+    "followingCount"
+  );
+
+if(el){
+  el.textContent = count;
+}
+}
+
+async function sendToken() {
+
+if (!selectedSendToken) {
+
+    alert("No token selected.");
+    return;
+
+}
+
+// ==========================
+// Ambil Canopy Address terbaru
+// ==========================
+
+const ethAddress =
+    localStorage.getItem("hunter_logged_in");
+
+if (!ethAddress) {
+
+    alert("Wallet not connected.");
+    return;
+
+}
+
+const profileRes = await fetch(
+    `http://localhost:3001/api/user/${ethAddress}`
+);
+
+const profile = await profileRes.json();
+
+if (!profile.success) {
+
+    alert("User not found.");
+    return;
+
+}
+
+const sender =
+    profile.user.canopyAddress;
+
+console.log("Sender =", sender);
+
+const receiver =
+    document.getElementById("receiverAddress")
+    .value
+    .trim()
+    .toLowerCase();
+
+console.log("Receiver =", receiver);
+
+const amount =
+    Number(
+        document.getElementById("sendAmount").value
+    );
+
+console.log("Amount =", amount);
+
+if (!receiver) {
+
+    alert("Receiver address is required.");
+    return;
+
+}
+
+if (amount <= 0) {
+
+    alert("Invalid amount.");
+    return;
+
+}
+
+if (amount > selectedSendToken.balance) {
+
+    alert("Insufficient balance.");
+    return;
+
+}
+
+const res = await fetch(
+    "http://localhost:3001/api/send-token",
+    {
+
+        method: "POST",
+
+        headers: {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+
+            tokenId: selectedSendToken.id,
+
+            from: sender,
+
+            to: receiver,
+
+            amount
+
+        })
+
+    }
+);
+
+const data = await res.json();
+
+console.log(data);
+
+if (!data.success) {
+
+    alert(data.message);
+    return;
+
+}
+
+alert("Transfer success!");
+
+closeModal("send-token-modal");
+
+await loadMyTokens();
+
+}
+
+async function toggleFollow(targetAddress){
+
+const user = JSON.parse(
+  localStorage.getItem("hunter_user_" + userAddress)
+);
+
+if(!user.following){
+  user.following = [];
+}
+
+const index = user.following.indexOf(targetAddress);
+
+if(index >= 0){
+  user.following.splice(index, 1);
+} else {
+  user.following.push(targetAddress);
+}
+
+localStorage.setItem(
+  "hunter_user_" + userAddress,
+  JSON.stringify(user)
+);
+
+// update UI
+renderFollowButton(window.viewedProfile);
+
+updateFollowingCount();
+
+loadWhoToFollow();
+
+
+
+await fetch("http://localhost:3001/api/follow", {
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body:JSON.stringify({
+    from: userAddress,
+    to: targetAddress
+  })
+});
+}
+
+
+async function createTokenTreasury() {
+
+const wallet = createCanopyWallet();
+
+const faucet = sendFaucetTx(wallet.address);
+
+if (!faucet.success) {
+    throw new Error(faucet.error);
+}
+
+return {
+    nickname: wallet.nickname,
+    address: wallet.address,
+    txHash: faucet.txHash,
+    reserve: 1000
+};
+}
+
+// edite profile
+async function saveProfileChanges(){
+
+const user =
+JSON.parse(
+localStorage.getItem(
+"hunter_user_" + userAddress
+)
+);
+
+if(!user) return;
+
+user.name =
+document.getElementById(
+"editDisplayName"
+).value.trim();
+
+user.username =
+document.getElementById(
+"editUsername"
+).value.trim();
+
+if(user.username && !user.username.startsWith("@")){
+  user.username = "@" + user.username;
+}
+
+user.bio =
+document.getElementById(
+"editBio"
+).value.trim();
+
+localStorage.setItem(
+"hunter_user_" + userAddress,
+JSON.stringify(user)
+);
+
+await fetch(
+  "http://localhost:3001/api/update-profile",
+  {
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+      ethAddress:userAddress,
+      name:user.name,
+      username:user.username,
+      bio:user.bio
+    })
+  }
+);
+
+document.getElementById(
+"profileName"
+).innerHTML =
+user.name +
+`
+<span class="badge-verified">
+<i class="ti ti-check"></i>
+Verified
+</span>
+`;
+
+document.getElementById(
+"profileHandle"
+).textContent =
+user.username;
+
+document.getElementById(
+"profileBio"
+).textContent =
+user.bio;
+
+document.getElementById(
+"sidebarName"
+).textContent =
+user.name;
+
+document.getElementById(
+"sidebarUsername"
+).textContent =
+user.username;
+
+document.getElementById(
+"editProfileModal"
+).classList.add("hidden");
+
+alert(
+"Profile updated successfully"
+);
+
+}
+
+
+document.addEventListener(
+  "change",
+  function(e){
+
+    if(e.target.id !== "tok-logo")
+      return;
+
+    const file =
+      e.target.files[0];
+
+    if(!file)
+      return;
+
+    const reader =
+      new FileReader();
+
+    reader.onload =
+      function(ev){
+
+        document.getElementById(
+          "tok-logo-preview"
+        ).src =
+          ev.target.result;
+      };
+
+    reader.readAsDataURL(file);
+
+  }
+);
+
+document
+.getElementById("signupPhoto")
+.addEventListener(
+  "change",
+  function(e){
+
+    const file = e.target.files[0];
+
+    if(!file) return;
+
+    const reader =
+    new FileReader();
+
+    reader.onload =
+    function(event){
+
+      signupPhoto =
+      event.target.result;
+
+      document.getElementById(
+        "signupPreview"
+      ).src =
+      signupPhoto;
+
+    };
+
+    reader.readAsDataURL(file);
+
+  }
+);
+
+
+// search
+
+
+document.getElementById("hunterSearch").addEventListener("input", async function(e){
+
+const q = e.target.value.trim();
+
+if(!q){
+  document.getElementById("searchResults").innerHTML = "";
+  return;
+}
+
+const res = await fetch(
+  `http://localhost:3001/api/search-users?q=${encodeURIComponent(q)}`
+);
+
+const data = await res.json();
+
+if(!data.success) return;
+
+renderSearchResults(data.users);
+});
+
+
+function renderSearchResults(users){
+
+const el = document.getElementById("searchResults");
+
+if(users.length === 0){
+    el.style.display = "none";
+    return;
+}
+
+el.style.display = "block";
+el.innerHTML = users.map(u => `
+<div class="search-item" onclick="openProfile('${u.ethAddress}')">
+
+    <div class="search-avatar">
+        ${
+            u.photo
+            ? `<img
+                    src="${toUrl(u.photo)}"
+                    class="search-avatar-img"
+                    alt="${u.name}"
+               >`
+            : `<span>${(u.name || "T")[0]}</span>`
+        }
+    </div>
+
+    <div class="search-user-info">
+        <div class="search-name">
+            ${u.name}
+        </div>
+
+        <div class="search-username">
+            ${u.username}
+        </div>
+    </div>
+
+</div>
+`).join("");
+}
+document.addEventListener("click", function(e){
+
+const searchBox =
+    document.querySelector(".search-container");
+
+const results =
+    document.getElementById("searchResults");
+
+if(!searchBox.contains(e.target)){
+    results.style.display = "none";
+}
+});
+
+
+async function openProfile(ethAddress){
+
+try{
+
+    const res = await fetch(
+        `http://localhost:3001/api/user/${ethAddress}`
+    );
+
+    const data = await res.json();
+
+    if(!data.success) return;
+
+    window.viewedProfile = data.user;
+
+    showPage("profile");
+
+    renderProfilePage(data.user);
+
+    loadProfilePostCount(data.user.ethAddress);
+
+}catch(err){
+    console.error(err);
+}
+}
+
+function renderProfilePage(user){
+
+document.getElementById("profileName").innerHTML =
+`${user.name}
+<span class="badge-verified">
+    <i class="ti ti-check"></i>Verified
+</span>`;
+
+document.getElementById("profileHandle").textContent =
+    user.username || "";
+
+document.getElementById("profileBio").textContent =
+    user.bio || "";
+
+
+
+//----------------------------------
+// Avatar
+//----------------------------------
+
+const avatar =
+    user.photo
+        ? toUrl(user.photo)
+        : "assets/default-avatar.png";
+
+document.getElementById("profileAvatarLg").innerHTML =
+
+`
+<img
+    src="${avatar}"
+    class="avatar-img"
+    style="
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        border-radius:50%;
+    ">
+`;
+
+
+
+//----------------------------------
+// Cover
+//----------------------------------
+
+const cover =
+    user.cover
+        ? toUrl(user.cover)
+        : "";
+
+const coverDiv =
+    document.getElementById("profileCover");
+
+if(cover){
+
+    coverDiv.style.backgroundImage =
+        `url("${cover}")`;
+
+}else{
+
+    coverDiv.style.backgroundImage = "none";
+
+}
+
+coverDiv.style.backgroundSize = "cover";
+coverDiv.style.backgroundPosition = "center";
+
+
+
+renderFollowButton(user);
+
+loadProfilePostCount(user.ethAddress);
+loadProfilePosts(user.ethAddress);
+
+}
+
+
+
+// profilePhotoUpload
+
+document.getElementById("profilePhotoUpload").addEventListener(
+"change",
+
+async function(e){
+  e.preventDefault();   // ❗ penting
+  e.stopPropagation(); 
+
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const res = await uploadPhotoToServer(file);
+
+  if(!res.success){
+    alert("Upload gagal");
+    return;
+  }
+
+  const user = JSON.parse(
+    localStorage.getItem("hunter_user_" + userAddress)
+  );
+
+  if(!user) return;
+
+  // update local storage
+  user.photo = res.photo;
+  localStorage.setItem("hunter_user_" + userAddress, JSON.stringify(user));
+  localStorage.setItem(
+  "hunter_user",
+  JSON.stringify(user)
+);
+
+  const url = toUrl(user.photo);
+
+document.getElementById("sidebarAvatar").innerHTML =
+`<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+
+document.getElementById("profileAvatarLg").innerHTML =
+`<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+
+  // 🔥 UPDATE UI TANPA RELOAD
+  const imgHTML = `
+    <img src="${toUrl(res.photo)}"
+      style="
+        width:100%;
+        height:100%;
+        object-fit:cover;
+        border-radius:50%;
+      ">
+  `;
+
+  document.querySelectorAll(".avatar-img").forEach(el => {
+  el.src = url;
+});
+
+  document.getElementById("signupPreview").src = toUrl(res.photo);
+  document.getElementById("editProfileAvatar").innerHTML = imgHTML;
+  document.getElementById("sidebarAvatar").innerHTML = imgHTML;
+  document.getElementById("composeAvatar").innerHTML = imgHTML;
+  document.getElementById("profileAvatarLg").innerHTML = imgHTML;
+
+});
+
+window.addEventListener("load", () => {
+
+const saved = localStorage.getItem("hunter_logged_in");
+
+if(!saved){
+  document.getElementById("auth-modal").style.display = "flex";
+}
+
+// tampilkan halaman setelah check selesai
+document.documentElement.style.visibility = "visible";
+});
+
+async function loadProfilePosts(ethAddress){
+
+const res = await fetch(
+    `http://localhost:3001/api/posts/${ethAddress}`
+);
+
+const data = await res.json();
+
+if(!data.success) return;
+
+renderFeed(
+    data.posts,
+    "profile-feed"
+);
+}
+
+// ═══════════════════════════════════════════
+// CANOPY TESTNET — TOKEN PAGE INTEGRATION
+// ═══════════════════════════════════════════
+
+// Bangun state key untuk account Canopy
+// Format: prefix 0x01 + length 0x14 (20 bytes) + address hex
+function buildAccountKey(hexAddress){
+  const clean = hexAddress.replace(/^0x/,'').toLowerCase();
+  if(clean.length !== 40){
+    console.warn("Address bukan 20 bytes:", hexAddress);
+    return null;
+  }
+  return "01" + "14" + clean;
+}
+
+// Fetch balance account dari Canopy node
+
+async function fetchCanopyBalance(canopyAddr){
+
+try{
+
+  const res = await fetch(
+    `${CANOPY_RPC}/v1/query/account`,
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        address:canopyAddr
+      }),
+      signal:AbortSignal.timeout(8000)
+    }
+  );
+
+  if(!res.ok){
+    throw new Error(
+      "HTTP " + res.status
+    );
+  }
+
+  return await res.json();
+
+}catch(e){
+
+  console.error(
+    "Account fetch error:",
+    e
+  );
+
+  return null;
+
+}
+
+}
+// Fetch params chain (nama chain, simbol token, dll)
+
+
+async function fetchCanopyParams(){
+
+try{
+
+  const res = await fetch(
+    `${CANOPY_RPC}/v1/query/params`,
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        Offset:0
+      }),
+      signal:AbortSignal.timeout(8000)
+    }
+  );
+
+  if(!res.ok){
+    throw new Error(
+      "HTTP " + res.status
+    );
+  }
+
+  return await res.json();
+
+}catch(e){
+
+  console.error(e);
+
+  return null;
+
+}
+
+}
+
+// Fetch latest block height
+async function fetchCanopyHeight(){
+
+try{
+
+  const res = await fetch(
+    `${CANOPY_RPC}/v1/query/height`,
+    {
+      method:"POST",
+      signal:AbortSignal.timeout(8000)
+    }
+  );
+
+  if(!res.ok){
+    throw new Error(
+      "HTTP " + res.status
+    );
+  }
+
+  return await res.json();
+
+}catch(e){
+
+  console.error(e);
+
+  return null;
+
+}
+
+}
+
+function togglePostMenu(e,id){
+
+e.stopPropagation();
+
+document.querySelectorAll(".hunter-post-dropdown")
+    .forEach(x=>x.classList.remove("show"));
+
+const menu=document.getElementById("post-menu-"+id);
+
+menu.style.left=e.currentTarget.getBoundingClientRect().left-140+"px";
+menu.style.top=e.currentTarget.getBoundingClientRect().bottom+6+"px";
+
+menu.classList.toggle("show");
+}
+
+
+document.addEventListener("click",()=>{
+
+document
+    .querySelectorAll(".post-dropdown")
+    .forEach(menu=>{
+
+        menu.classList.remove("show");
+
+    });
+
+});
+
+async function deletePost(id){
+
+if(!confirm("Delete this post?"))
+    return;
+
+try{
+
+    const res = await fetch(`${API}/posts/${id}`,{
+        method:"DELETE"
+    });
+
+    const result = await res.json();
+
+    if(result.success){
+
+        await loadPosts();
+
+    }
+
+}catch(err){
+
+    console.error(err);
+
+    alert("Server error");
+
+}
+
+}
+async function loadProfilePostCount(ethAddress){
+
+if(!ethAddress){
+    console.error("ethAddress kosong");
+    return;
+}
+
+try{
+
+    const res = await fetch(
+        `http://localhost:3001/api/posts/${ethAddress}`
+    );
+
+    const data = await res.json();
+
+    console.log(data);
+
+    document.getElementById("profilePostCount").textContent =
+        data.posts ? data.posts.length : 0;
+
+}catch(err){
+
+    console.error(err);
+
+    document.getElementById("profilePostCount").textContent = 0;
+}
+
+}
+// whoToFollowList
+
+async function loadWhoToFollow(){
+
+try{
+
+  const res =
+    await fetch(
+      "http://localhost:3001/api/users"
+    );
+
+  const data =
+    await res.json();
+
+  if(!data.success)
+    return;
+
+  const currentUser =
+    JSON.parse(
+      localStorage.getItem(
+        "hunter_user_" + userAddress
+      )
+    );
+
+  const suggestions =
+    data.users.filter(
+      u =>
+        u.ethAddress !==
+        currentUser.ethAddress
+    );
+
+  renderWhoToFollow(
+    suggestions
+  );
+
+}catch(err){
+
+  console.error(err);
+
+}
+
+}
+function renderWhoToFollow(users){
+
+  console.log(users);
+
+users.forEach(user=>{
+    console.log(user);
+    console.log("photo =", user.photo);
+    console.log("cover =", user.cover);
+});
+
+
+const currentUser = JSON.parse(
+  localStorage.getItem("hunter_user_" + userAddress)
+);
+
+const following = currentUser?.following || [];
+
+const box = document.getElementById("whoToFollowList");
+
+box.innerHTML = users.map(user => {
+
+  const isFollowing =
+    following.includes(user.ethAddress);
+
+    return `
+<div
+    class="who-follow-item"
+    onclick="openProfile('${user.ethAddress}')"
+>
+
+<div class="who-follow-photo">
+    <img src="${user.photo}" alt="${user.name}">
+</div>
+
+    <div class="who-follow-info">
+        <div class="who-follow-name">
+            ${user.name}
+        </div>
+
+        <div class="who-follow-username">
+            ${user.username}
+        </div>
+    </div>
+
+    <button
+        class="follow-mini-btn"
+        onclick="event.stopPropagation();toggleFollow('${user.ethAddress}')"
+    >
+        ${isFollowing ? "Unfollow" : "Follow"}
+    </button>
+
+</div>
+`;
+}).join("");
+}
+
+function updateSendTokenInfo() {
+
+if (!selectedSendToken) return;
+
+document.getElementById("sendTokenLogo").src =
+    "http://localhost:3001" + selectedSendToken.logo;
+
+document.getElementById("sendTokenSymbol").textContent =
+    selectedSendToken.symbol;
+
+// tampilkan reserve treasury
+document.getElementById("sendTokenBalance").textContent =
+    Number(selectedSendToken.reserve).toLocaleString() + " ";
+
+// pastikan sender selalu treasury token ini
+document.getElementById("senderAddress").value =
+    selectedSendToken.treasuryAddress;
+
+}
+function changeSendToken(){
+
+const id =
+    document.getElementById("sendTokenSelect").value;
+
+selectedSendToken =
+    userTokens.find(t=>t.id===id);
+
+updateSendTokenInfo();
+
+}
+
+// Fungsi utama — dipanggil saat halaman Tokens dibuka
+async function loadTokenPageData(){
+  // Tentukan address yang akan dipakai
+  // Prioritas: canopyAddress dari server → userAddress dari wallet
+  const addr =
+JSON.parse(
+  localStorage.getItem(
+    "hunter_user_" + userAddress
+  )
+)?.canopyAddress;
+
+  // Tampilkan address di banner
+  const walletDisplay = document.getElementById("tokens-wallet-display");
+  if(walletDisplay){
+    walletDisplay.textContent =
+  addr
+  ? addr.slice(0,12) +
+    "..." +
+    addr.slice(-8)
+  : "Tidak ada address";
+  }
+
+  if(!addr){
+    setTokenStatus("⚠️ Login dulu untuk melihat data token kamu.");
+    return;
+  }
+
+  // Tampilkan loading
+  setTokenStatus("⏳ Mengambil data dari Canopy testnet...", true);
+  document.getElementById("token-balance-display").textContent = "...";
+  document.getElementById("token-chain-display").textContent = "...";
+  document.getElementById("token-block-display").textContent = "...";
+
+  // Fetch semua data bersamaan
+  const [balanceData, paramsData, heightData] = await Promise.all([
+    fetchCanopyBalance(addr),
+    fetchCanopyParams(),
+    fetchCanopyHeight()
+  ]);
+// ── BALANCE ──
+if (balanceData) {
+
+  const rawVal =
+    balanceData.balance ??
+    balanceData.amount ??
+    balanceData.value ??
+    balanceData.result ??
+    0;
+
+  const balance =
+    Number(rawVal);
+
+  document.getElementById(
+    "token-balance-display"
+  ).textContent =
+    Number.isFinite(balance)
+      ? balance.toLocaleString()
+      : "0";
+
+  // tampilkan raw response untuk debugging
+
+
+} else {
+
+  document.getElementById(
+    "token-balance-display"
+  ).textContent = "0";
+
+  document.getElementById(
+    "token-raw-card"
+  ).style.display = "none";
+}
+
+
+// ── CHAIN PARAMS ──
+if (paramsData) {
+
+  const chainName =
+    paramsData.chain_name ??
+    paramsData.name ??
+    "Canopy";
+
+  const symbol =
+    paramsData.symbol ??
+    paramsData.token_symbol ??
+    "CNP";
+
+  document.getElementById(
+    "token-chain-display"
+  ).textContent = chainName;
+
+  document.getElementById(
+    "token-symbol-display"
+  ).textContent = symbol;
+
+} else {
+
+  document.getElementById(
+    "token-chain-display"
+  ).textContent = "Canopy";
+
+  document.getElementById(
+    "token-symbol-display"
+  ).textContent = "CNP";
+}
+
+
+// ── BLOCK HEIGHT ──
+if (heightData) {
+
+  const height =
+    heightData.height ??
+    heightData.block_height ??
+    heightData;
+
+  document.getElementById(
+    "token-block-display"
+  ).textContent =
+    Number(height).toLocaleString();
+
+} else {
+
+  document.getElementById(
+    "token-block-display"
+  ).textContent = "—";
+}
+
+
+// ── STATUS ──
+if (paramsData || heightData) {
+
+  setTokenStatus(
+    "✅ Connected to Canopy testnet"
+  );
+
+  setTimeout(() => {
+    setTokenStatus("");
+  }, 3000);
+
+} else {
+
+  setTokenStatus(
+    "❌ Tidak dapat terhubung ke Canopy node di " +
+    CANOPY_RPC
+  );
+
+}
+}
+
+// Tombol refresh
+function refreshTokenData(){
+  const icon = document.getElementById("refresh-icon");
+  if(icon) icon.style.animation = "spin 1s linear infinite";
+  loadTokenPageData().finally(() => {
+    if(icon) icon.style.animation = "";
+  });
+}
+
+function closeSendTokenModal(){
+
+document
+    .getElementById("send-token-modal")
+    .classList.add("hidden");
+
+}
+
+// Helper tampilkan status
+function setTokenStatus(msg, loading){
+  const el = document.getElementById("token-fetch-status");
+  if(!el) return;
+  if(!msg){ el.style.display = "none"; return; }
+  el.style.display = "block";
+  el.textContent = msg;
+  el.style.color = loading ? "#BA7517" : (msg.startsWith("❌") ? "#A32D2D" : "#666");
+}
+
+
+document.addEventListener(
+  "DOMContentLoaded",
+  function(){
+
+    const logoInput =
+      document.getElementById(
+        "tok-logo"
+      );
+
+    const logoPreview =
+      document.getElementById(
+        "tok-logo-preview"
+      );
+
+    if(
+      !logoInput ||
+      !logoPreview
+    ){
+      return;
+    }
+
+    logoInput.addEventListener(
+      "change",
+      function(){
+
+        const file =
+          this.files[0];
+
+        if(!file)
+          return;
+
+        const reader =
+          new FileReader();
+
+        reader.onload =
+          function(e){
+
+            logoPreview.src =
+              e.target.result;
+
+          };
+
+        reader.readAsDataURL(
+          file
+        );
+
+      }
+    );
+
+  }
+);
+// CSS spin untuk ikon refresh
+const spinStyle = document.createElement("style");
+spinStyle.textContent = `@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`;
+document.head.appendChild(spinStyle);
+
+renderFeed(posts,'feed-list');
+</script>
+
+<!-- ================= SEND TOKEN MODAL ================= -->
+<div id="send-token-modal" class="hidden">
+
+  <div class="modal-card send-modal">
+
+      <button class="modal-close" onclick="closeSendTokenModal()">
+          <i class="ti ti-x"></i>
+      </button>
+
+      <div class="modal-title">
+          Send Token
+      </div>
+
+
+
+      <div class="send-field">
+
+          <label>Token</label>
+
+          <select
+              id="sendTokenSelect"
+              class="send-select"
+              onchange="changeSendToken()">
+          </select>
+
+      </div>
+
+      <div class="send-token-box">
+
+          <img
+              id="sendTokenLogo"
+              src=""
+              class="send-token-logo">
+
+          <div>
+
+              <div
+                  id="sendTokenSymbol"
+                  class="send-token-symbol">
+                  -
+              </div>
+
+          </div>
+
+      </div>
+
+      <div class="send-balance">
+          Balance :
+          <span id="sendTokenBalance">0</span>
+      </div>
+
+      <label>Token Address</label>
+
+      <input
+          id="senderAddress"
+          class="form-input"
+          readonly>
+
+      <label>Recipient</label>
+
+      <input
+          id="receiverAddress"
+          class="form-input"
+          placeholder="Canopy Address">
+
+      <label>Amount</label>
+
+      <input
+          id="sendAmount"
+          class="form-input"
+          placeholder="0">
+
+
+          <div class="network-fee-treasury">
+            Minimum Network Fee Required:
+            <strong>12,000 uCNP</strong>
+        </div>
+      <div class="network-fee">
+          Network Fee :
+          <span>0.001 CNPY</span>
+      </div>
+
+      <div class="modal-actions">
+
+          <button type="button"
+              class="send-confirm-btn"
+              onclick="sendToken()">
+
+              <i class="ti ti-send"></i>
+              Send Token
+
+          </button>
+
+      </div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= IMPORT NFT MODAL ================= -->
+
+<div id="import-nft-modal" class="hidden">
+
+  <div class="modal-card send-modal">
+
+      <button
+          class="modal-close"
+          onclick="closeImportNFTModal()">
+
+          <i class="ti ti-x"></i>
+
+      </button>
+
+      <div class="modal-title">
+          Import NFT
+      </div>
+
+      <p
+          style="
+              color:#777;
+              margin-top:12px;
+              margin-bottom:18px;
+          ">
+
+          Paste NFT Transaction Hash
+
+      </p>
+
+      <input
+          id="importTxHash"
+          class="form-input"
+          placeholder="dc12878a3effd42a5c478275072aaa777e84feefb7502a300b1d3cdd6c8fa459">
+
+      <div class="modal-actions">
+
+          <button
+              class="send-confirm-btn"
+              onclick="importNFT()">
+
+              <i class="ti ti-download"></i>
+              Import NFT
+
+          </button>
+
+          
+
+      </div>
+
+  </div>
+
+</div>
+    
+    
+        
+</body>
+</html>

@@ -1,0 +1,4 @@
+﻿[90mJun 17 02:57:49.946[0m [31mERROR: [0m
+[31mModule:  rpc[0m
+[31mCode:    7[0m
+[31mMessage: http response bad status 400 Bad Request with code 400 and body {}[0m

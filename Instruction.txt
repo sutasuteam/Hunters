@@ -1,0 +1,219 @@
+1. Custom Message Transaction (Prioritas)
+
+Saat ini alurnya masih seperti ini:
+
+Frontend
+      ↓
+wallet.js
+      ↓
+signer.go
+      ↓
+plugin
+      ↓
+blockchain
+
+Tetapi pesan (message) masih sangat generik.
+
+Target akhirnya adalah setiap transaksi memiliki message sendiri.
+
+Misalnya nanti Hunters mempunyai:
+
+send
+mint_nft
+buy_nft
+list_nft
+cancel_listing
+transfer_nft
+follow
+like_post
+create_post
+comment
+
+Setiap message memiliki:
+
+protobuf Message
+signer
+contract Check
+contract Deliver
+typeURL
+frontend request
+
+Jadi AI nanti cukup tahu polanya.
+
+Struktur yang sebaiknya dipakai
+
+Misalnya ingin membuat message baru.
+
+AI tinggal mengikuti checklist ini.
+
+STEP 1
+
+Tambah protobuf
+
+message MessageBuyNFT {
+
+bytes buyer = 1;
+
+string tokenId = 2;
+
+uint64 price = 3;
+
+}
+
+Lalu regenerate
+
+protoc ...
+STEP 2
+
+Tambah TransactionTypeUrls
+
+SupportedTransactions:
+
+buy_nft
+TransactionTypeUrls:
+
+type.googleapis.com/types.MessageBuyNFT
+STEP 3
+
+Tambahkan dispatcher
+
+Di CheckTx
+
+case *MessageBuyNFT:
+    return c.CheckMessageBuyNFT(x)
+
+Di DeliverTx
+
+case *MessageBuyNFT:
+    return c.DeliverMessageBuyNFT(x, request.Tx.Fee)
+STEP 4
+
+Buat CheckMessage
+
+Contoh
+
+func (c *Contract) CheckMessageBuyNFT(...)
+
+Yang dicek:
+
+buyer valid
+token id ada
+price > 0
+signer benar
+
+Tidak boleh mengubah state.
+
+STEP 5
+
+Buat DeliverMessage
+
+Di sinilah blockchain berubah.
+
+Misalnya
+
+cek NFT
+
+cek owner
+
+cek saldo buyer
+
+potong saldo
+
+tambah saldo seller
+
+ubah owner NFT
+
+buat event
+
+simpan state
+
+Semua write dilakukan di sini.
+
+STEP 6
+
+Signer
+
+Tambah
+
+case "buy_nft":
+
+Lalu
+
+msg := &contract.MessageBuyNFT{
+...
+}
+STEP 7
+
+TypeURL
+
+type.googleapis.com/types.MessageBuyNFT
+
+harus sama persis.
+
+STEP 8
+
+wallet.js
+
+Tambahkan
+
+fetch("/buy")
+
+yang mengirim
+
+buyer
+
+tokenId
+
+price
+STEP 9
+
+Backend
+
+Endpoint
+
+POST /buy
+
+menerima
+
+buyer
+
+tokenId
+
+price
+
+kemudian memanggil signer.
+
+STEP 10
+
+Frontend
+
+Saat klik
+
+Buy NFT
+
+Frontend:
+
+loading
+
+↓
+
+sign
+
+↓
+
+waiting
+
+↓
+
+success
+
+↓
+
+Done
+Checklist lengkap AI
+
+Kalau nanti kamu meminta AI membuat message baru, cukup beri instruksi seperti ini.
+
+Ikuti pola MessageMintNFT. Tambahkan message blockchain baru bernama MessageBuyNFT. Perbarui file proto, regenerate protobuf, tambahkan TypeURL, dispatcher CheckTx dan DeliverTx, implementasikan CheckMessageBuyNFT, DeliverMessageBuyNFT, signer.go, endpoint backend, wallet.js, serta frontend agar menggunakan message baru. Jangan mengubah pola MessageMintNFT yang sudah ada.
+
+Dengan prompt seperti itu AI biasanya langsung paham seluruh alurnya.

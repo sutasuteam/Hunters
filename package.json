@@ -1,0 +1,21 @@
+{
+  "scripts": {
+    "backend": "node canopy-server.js",
+    "frontend": "npx http-server . -c-1",
+   "signer": "cd plugin/go/cmd/signer && go run .",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\" \"npm run signer\""
+  },
+  "dependencies": {
+    "axios": "^1.18.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "ethers": "^6.16.0",
+    "express": "^5.2.1",
+    "multer": "^2.2.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.3",
+    "live-server": "^1.2.2"
+  }
+}

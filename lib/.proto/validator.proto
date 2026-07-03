@@ -1,0 +1,94 @@
+syntax = "proto3";
+package types;
+
+option go_package = "github.com/canopy-network/canopy/fsm";
+// *****************************************************************************************************
+// This file is auto-generated from source files in `/lib/.proto/*` using Protocol Buffers (protobuf)
+//
+// Protobuf is a language-neutral, platform-neutral serialization format. It allows users
+// to define objects in a way that’s both efficient to store and fast to transmit over the network.
+// These definitions are compiled into code that *enables different systems and programming languages
+// to communicate in a byte-perfect manner*
+//
+// To update these structures, make changes to the source .proto files, then recompile
+// to regenerate this file.
+// These auto-generated files are easily recognized by checking for a `.pb.go` ending
+// *****************************************************************************************************
+//_
+//_
+//_
+//
+// A Validator is an actor in the blockchain network responsible for verifying transactions, creating new blocks,
+// and maintaining the blockchain's integrity and security. In Canopy, Validators provide this service for multiple
+// chains by restaking their tokens across multiple 'committees' and run a blockchain client for each
+// Both the Operator and the Output private key may sign transactions on behalf of the Validator, but only the
+// Output private key may change the Output address.
+message Validator {
+  // address: the short version of the public key of the operator of the service, corresponding to the 2
+  bytes address = 1;
+  // public_key: the public cryptographic identity of the operator of the service. This key must be an aggregable BLS
+  // key for efficiency in the BFT process.
+  bytes public_key = 2; // @gotags: json:"publicKey"
+  // net_address: the tcp peer-to-peer address of the node to enable easy discovery of the peer for multi-consensus
+  string net_address = 3; // @gotags: json:"netAddress"
+  // staked_amount: the amount of tokens locked as a surety bond against malicious behavior. These tokens may be
+  // increased by auto-compounding rewards or by an edit-stake command. This bond is returned to the output address
+  // after executing an unstake command and waiting the unstaking period.
+  uint64 staked_amount = 4; // @gotags: json:"stakedAmount"
+  // committees: a list of ids of the committees the validator is offering Validation or Delegation services for
+  repeated uint64 committees = 5;
+  // max_paused_height: if the Validator is paused, this value tracks the maximum height it may be paused before it
+  // automatically begins unstaking
+  uint64 max_paused_height = 6; // @gotags: json:"maxPausedHeight"
+  // unstaking_height: if the Validator is unstaking, this value tracks the future block height a Validator's surety
+  // bond will be returned
+  uint64 unstaking_height = 7; // @gotags: json:"unstakingHeight"
+  // output: the address where early-withdrawal rewards and the unstaking surety bond are transferred to
+  bytes output = 8;
+  // delegate: signals whether the Validator is a Delegate or not. If true, the Validator only passively participates
+  // in Validation-as-a-Service by dedicating their funds to help the chain qualify for protocol subsidisation
+  bool delegate = 9;
+  // compound: signals whether the Validator is auto-compounding (increasing their stake with new rewards) or
+  // withdrawing rewards early to their output address as they come in
+  bool compound = 10;
+}
+
+// ValidatorsList is stored as a single blob (instead of using prefixed keys) for the following reasons:
+//
+// - Filesystem database iterators (e.g., in LevelDB/BadgerDB) introduce significant overhead and are often slow,
+//   especially when reading or updating large sets of keys every block.
+//
+// - The total number of validators is expected to remain below 100,000, and each entry is relatively small (~200 bytes),
+//   making a full in-memory deserialization manageable and performant.
+//
+// - Validators are expected to participate in most committees, so the majority of the list is relevant to each context,
+//   and filtering from a single list is faster than multiple disk reads.
+//
+// - Storing separate, per-committee lists (especially if sorted and updated every block) would create substantial
+//   additional write and storage overhead compared to maintaining a single, compact list.
+message ValidatorsList {
+  repeated Validator List = 1;
+}
+
+// NonSignerInfo is information that tracks the number of blocks not signed by the Validator within the Non-Sign-Window
+message NonSigner {
+  // address: shorter version of the operator public key of the non signer
+  bytes address = 1;
+  // counter: increments when a Validator doesn't sign a block and resets every non-sign-window
+  uint64 counter = 2;
+  // chain_counters: optional per-chain non-sign counters for protocol-versioned chain-scoped slashing
+  repeated NonSignerChainCounter chain_counters = 3;
+}
+
+// NonSignerChainCounter tracks a non-signer counter scoped to a specific chain id within a non-sign window
+message NonSignerChainCounter {
+  // chain_id: the chain committee id this counter applies to
+  uint64 chain_id = 1;
+  // counter: number of missed signatures for this chain during the current non-sign window
+  uint64 counter = 2;
+}
+
+// NonSignerList is a list of information that tracks the number of blocks not signed by the Validator within the Non-Sign-Window
+message NonSignerList {
+  repeated NonSigner List = 1;
+}

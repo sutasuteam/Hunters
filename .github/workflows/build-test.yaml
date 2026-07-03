@@ -1,0 +1,51 @@
+name: Test
+on:
+  pull_request:
+    branches: "*"
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+  push:
+    branches:
+      - main
+      - staging
+    paths:
+      - '**.go'
+      - 'go.mod'
+      - 'go.sum'
+      - '.github/workflows/**'
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.24
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Build Services
+        run: make build/canopy-full
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.24
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+      - name: Run Unit tests
+        run: make build/canopy-full && go test $(go list ./... | grep -v cmd/auto-update)

@@ -1,0 +1,70 @@
+syntax = "proto3";
+package types;
+
+option go_package = "github.com/canopy-network/canopy/lib/crypto";
+// *****************************************************************************************************
+// This file is auto-generated from source files in `/lib/.proto/*` using Protocol Buffers (protobuf)
+//
+// Protobuf is a language-neutral, platform-neutral serialization format. It allows users
+// to define objects in a way that’s both efficient to store and fast to transmit over the network.
+// These definitions are compiled into code that *enables different systems and programming languages
+// to communicate in a byte-perfect manner*
+//
+// To update these structures, make changes to the source .proto files, then recompile
+// to regenerate this file.
+// These auto-generated files are easily recognized by checking for a `.pb.go` ending
+// *****************************************************************************************************
+//_
+//_
+//_
+// ProtoAddress is a wrapper around address bytes enabling protobuf encoding and decoding
+message ProtoAddress {
+  // address: the shorter version of a public key
+  bytes address = 1;
+}
+
+// A repeated list of addresses in proto format
+message ProtoAddresses {
+  // addresses: a list of shorter versions of a public key
+  repeated bytes addresses = 1;
+}
+
+// ProtoPubKey is a wrapper around public key bytes enabling protobuf encoding and decoding
+message ProtoPubKey {
+  // pub_key: the public cryptographic code that allows signature verification from a private key
+  bytes pubkey = 1;
+}
+
+// ProtoPrivKey is a wrapper around private key bytes enabling protobuf encoding and decoding
+message ProtoPrivKey {
+  // priv_key: is a secret cryptographic key used in asymmetric encryption to sign data and prove ownership
+  // of a public key
+  bytes privkey = 1;
+}
+
+// ProtoClassGroup represents a mathematical class group with coefficients a and b
+message ProtoClassGroup {
+  bytes a = 1; // a value in ax^2 + bxy + cy^2
+  bytes b = 2; // b value in ax^2 + bxy + cy^2
+}
+
+// A Verifiable Delay Function is a cryptographic function that takes a set amount of time to compute, even on powerful
+// hardware, and produces a result that any node may quickly verify. In Canopy it's used as a proxy for time to deter
+// historical forking attacks like a 'long-range-attack'.
+message VDF {
+  // proof: a proof of function completion given a specific seed
+  bytes proof = 1;
+  // output: the final output of the calculated 'squarings'
+  bytes output = 2;
+  // iterations: number of serial executions (proxy for time)
+  uint64 iterations = 3;
+}
+
+message MultiPublicKey {
+  // public_keys: the full signer set when the signature is an aggregate BLS multisig signature
+  repeated bytes public_keys = 1; // @gotags: json:"publicKeys,omitempty"
+  // bitmap: identifies which multi_public_keys are included in the aggregate signature
+  bytes bitmap = 2; // @gotags: json:"bitmap,omitempty"
+  // threshold: minimum number of enabled signers required for verification; 0 disables threshold enforcement
+  uint32 threshold = 3; // @gotags: json:"threshold,omitempty"
+}

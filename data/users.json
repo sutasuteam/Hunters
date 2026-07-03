@@ -1,0 +1,33 @@
+[
+  {
+    "ethAddress": "0x1AdfC88F8f0771496ed62a666C0e714CbD974887",
+    "canopyAddress": "79878bb7085a1710d3819a4005edb2b79cf93f78",
+    "cover": "http://localhost:3001/uploads/1781772666397.png",
+    "photo": "http://localhost:3001/uploads/1781760150878.png",
+    "name": "Hunter",
+    "username": "@Hunter",
+    "bio": "On-chain hunter. NFT collector. Building in Web3."
+  },
+  {
+    "ethAddress": "0xE25c712759eFf9dD084CbD9cf4A6308346aD90B7",
+    "canopyAddress": "cac13508308a8778b0cdfdfcd67985bc02358da3",
+    "name": "test",
+    "username": "@test",
+    "bio": "On-chain hunter. NFT collector. Building in Web3.",
+    "photo": "http://localhost:3001/uploads/1782101665632.jpg",
+    "cover": "http://localhost:3001/uploads/1782263304317.png",
+    "updatedAt": 1782101678520
+  },
+  
+
+
+  {
+    "ethAddress": "0x6dcFfB450b77dDB8dE443c5d47Fc043B131F6439",
+    "canopyAddress": "67934d6dbd5405b096518f69a77ae4b9a314f040",
+    "name": "",
+    "username": "",
+    "bio": "",
+    "photo": "",
+    "cover": ""
+  }
+]

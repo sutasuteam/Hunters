@@ -1,0 +1,47 @@
+syntax = "proto3";
+package types;
+
+option go_package = "github.com/canopy-network/canopy/lib";
+
+// *****************************************************************************************************
+// This file is auto-generated from source files in `/lib/.proto/*` using Protocol Buffers (protobuf)
+//
+// Protobuf is a language-neutral, platform-neutral serialization format. It allows users
+// to define objects in a way that’s both efficient to store and fast to transmit over the network.
+// These definitions are compiled into code that *enables different systems and programming languages
+// to communicate in a byte-perfect manner*
+//
+// To update these structures, make changes to the source .proto files, then recompile
+// to regenerate this file.
+// These auto-generated files are easily recognized by checking for a `.pb.go` ending
+// *****************************************************************************************************
+//_
+//_
+//_
+// CommitID is a structure that holds the merkle root for a certain height
+message CommitID {
+  // height: the identifier of the commit_id referencing the block height
+  uint64 height = 1;
+  // root: the merkle root of the SMT state commit store
+  bytes root = 2;
+}
+
+// Node represents a single element in a sparse Merkle tree
+// It stores the cryptographic hash of data and the structural information
+// required to traverse and reconstruct the tree
+message Node {
+  // Value: is the cryptographic hash of the data included in the database
+  // the ValueHash is included in the parent hash
+  bytes Value = 1; // @gotags: json:"value"
+  // LeftChildKey: is the key for the left child node. Nil means no child
+  bytes LeftChildKey = 2; // @gotags: json:"leftChildKey"
+  // RightChildKey: is the key for the right child node. Nil means no child
+  bytes RightChildKey = 3;
+  // Key: used for merkle proof generation and verification. It is the compact
+  // representation of the node's key bit sequences
+  bytes Key = 4;
+  // Bitmask: Used for Merkle proof generation and verification. Indicates 
+  // whether each hash requires the left or right sibling, where 0 
+  // represents a left sibling and 1 represents a right sibling
+  int32 Bitmask = 5;
+}

@@ -1,0 +1,178 @@
+syntax = "proto3";
+package types;
+
+option go_package = "github.com/canopy-network/canopy/lib";
+
+import "consensus.proto";
+import "dex.proto";
+// *****************************************************************************************************
+// This file is auto-generated from source files in `/lib/.proto/*` using Protocol Buffers (protobuf)
+//
+// Protobuf is a language-neutral, platform-neutral serialization format. It allows users
+// to define objects in a way that’s both efficient to store and fast to transmit over the network.
+// These definitions are compiled into code that *enables different systems and programming languages
+// to communicate in a byte-perfect manner*
+//
+// To update these structures, make changes to the source .proto files, then recompile
+// to regenerate this file.
+// These auto-generated files are easily recognized by checking for a `.pb.go` ending
+// *****************************************************************************************************
+//_
+//_
+//_
+// A QuorumCertificate is a collection of signatures from a super-majority of validators that confirms consensus on a
+// particular block and results. It serves as proof that enough validators have agreed on the block & result’s validity,
+// ensuring its acceptance and security in the blockchain.
+message QuorumCertificate {
+  // header: is the view of the quorum certificate
+  View header = 1;
+  // results: is the certificate result that Canopy uses to process payments, evidence, swaps, and checkpoints
+  CertificateResult results = 2;
+  // results_hash: is the cryptographic integrity bytes for results, results hash may be used to confirm the validator
+  // quorum signed off on the results
+  bytes results_hash = 3; // @gotags: json:"resultHash"
+  // block: the proposed block to be added to the blockchain
+  bytes block = 4;
+  // block_hash: is the cryptographic integrity bytes for block, block hash may be used to confirm the validator quorum
+  // signed off on the block
+  bytes block_hash = 5; // @gotags: json:"blockHash"
+  // proposer_key: is the public key of the block proposer
+  bytes proposer_key = 6; // @gotags: json:"proposerKey"
+  // (aggregate) signature: the compact signature created by combining multiple individual signatures from replica
+  // validators. This signature serves as a justification that a super-majority quorum signed off on the certificate
+  AggregateSignature signature = 7; // aggregate signature from the current proposer message
+}
+
+// CertificateResult contains the outcome of a certificate produced by a quorum in consensus
+message CertificateResult {
+  // reward_recipients: the recipients who are rewarded based on the quorum certificate
+  // specifically who the committee agreed to reward from the committee treasury
+  RewardRecipients reward_recipients = 1; // @gotags: json:"rewardRecipients"
+  // slash_recipients: the recipients who are penalized (slashed) based on the quorum certificate
+  // specifically who the committee agreed to slash due to evidence of bad behavior
+  SlashRecipients slash_recipients = 2; // @gotags: json:"slashRecipients"
+  // orders: contains information regarding the 'buying side' of sell orders
+  // including actions like 'buy/reserve order' or 'close/complete order'
+  Orders orders = 3; // @gotags: json:"orders"
+  // checkpoint: contains information from the 3rd party chain in order for Canopy to provide Checkpoint-as-a-Service
+  Checkpoint checkpoint = 4; // @gotags: json:"checkpoint"
+  // retired: signals if the committee wants to shut down and mark itself as 'forever unsubsidized' on the root-chain
+  bool retired = 5; // @gotags: json:"retired"
+  // dex_batch: contains information regarding the selling side 'dex' operations
+  DexBatch dex_batch = 6; // @gotags: json:"dexBatch"
+  // root_dex_batch: ifNested: contains the root chain's dex batch;
+  // without it the nested chain cannot sync from scratch because it no longer has access to the dex batch
+  DexBatch root_dex_batch = 7; // @gotags: json:"rootDexBatch"
+}
+
+// RewardRecipients is the list of recipients who will receive rewards from the committee's treasury pool,
+// based on decisions confirmed in a Quorum Certificate
+message RewardRecipients {
+  // payment_percents: the percentage of rewards allocated to each recipient
+  repeated PaymentPercents payment_percents = 1; // @gotags: json:"paymentPercents"
+  // number_of_samples: (internal processing only) the number of samples used to determine reward distribution
+  uint64 number_of_samples = 2; // @gotags: json:"numberOfSamples"
+}
+
+// SlashRecipients is the list of recipients who are penalized based on misbehavior, like double signing or bad
+// proposing based on a committee agreement confirmed in a Quorum Certificate
+message SlashRecipients {
+  // double_signers: a list of actors who the committee agreed double-signed based on evidence
+  repeated DoubleSigner double_signers = 1; // @gotags: json:"doubleSigners"
+}
+
+// Orders: tracks actions related to 'buyer side' activities for sell orders
+// The committee monitors the 3rd party chain for actions such as intent to buy, funds sent,
+// and funds not sent, and communicates these states to the Canopy chain
+message Orders {
+  // lock_orders: a list of actions where a buyer expresses an intent to purchase an order,
+  // often referred to as 'claiming' the order
+  repeated LockOrder lock_orders = 1; // @gotags: json:"lockOrders"
+  // reset_orders: a list of orders where no funds were sent before the deadline,
+  // signaling to Canopy to 'un-claim' the order
+  repeated bytes reset_orders = 2; // @gotags: json:"resetOrders"
+  // close_orders: a list of orders where funds were sent,
+  // signaling Canopy to transfer escrowed tokens to the buyer's Canopy address
+  repeated bytes close_orders = 3; // @gotags: json:"closeOrders"
+}
+
+// LockOrder is a buyer expressing an intent to purchase an order, often referred to as 'claiming' the order
+message LockOrder {
+  // order_id: is the number id that is unique to this committee to identify the order
+  bytes order_id = 1; // @gotags: json:"orderID"
+  // chain_id: is the id of the committee
+  uint64 chain_id = 2; // @gotags: json:"chainID"
+  // buyer_receive_address: the Canopy address where the tokens may be received
+  bytes buyer_receive_address = 3; // @gotags: json:"buyerReceiveAddress"
+  // buyer_send_address: the 'counter asset' address where the tokens will be sent from
+  bytes buyer_send_address = 4; // @gotags: json:"buyerSendAddress"
+  // buyer_chain_deadline: the 'counter asset' chain height at which the buyer must send the 'counter asset' by
+  // or the 'intent to buy' will be voided
+  uint64 buyer_chain_deadline = 5; // @gotags: json:"buyerChainDeadline"
+}
+
+// CloseOrder is a buyer completing the purchase of an order, often referred to as 'buying' the order
+message CloseOrder {
+  // order_id: is the number id that is unique to this committee to identify the order
+  bytes order_id = 1; // @gotags: json:"orderID"
+  // chain_id: is the id of the committee
+  uint64 chain_id = 2; // @gotags: json:"chainID"
+  // close_order: is the tag to represent the intent to embed a close order
+  bool close_order = 3; //@gotags: json:"closeOrder"
+}
+
+// Checkpoint is 3rd party chain information that allows Canopy to provide Checkpointing-as-a-Service for the 3rd party
+// checkpointing is important to prevent `long-range-attacks` in proof of stake blockchains and is currently the
+// secure standard
+message Checkpoint {
+  // height: the height of the third party chain
+  uint64 height = 1;
+  // block_hash: the cryptographic hash of the third party chain block for the height
+  bytes block_hash = 2; // @gotags: json:"blockHash"
+}
+
+// PaymentPercents represents the distribution of rewards to recipients from the committee treasury pool
+// Each recipient is identified by their address and the percentage of the reward they will receive
+// Percents are diluted based on how many samples are in the Committee Data
+message PaymentPercents {
+  // address: the address where the tokens will be received
+  bytes address = 1;
+  // percent: the dilutable share of the committee treasury pool
+  uint64 percent = 2;
+  // chain_id: the chain_id where the payment is distributed
+  uint64 chain_id = 3;
+}
+
+// DoubleSigner identifies a validator who has been caught double signing and should be slashed
+// The structure includes the validator's public key and a list of block heights where the double signing occurred
+message DoubleSigner {
+  // id: the cryptographic identifier of the malicious actor
+  // - at the consensus level, this represents the Public_Key of the actor
+  // - at the state machine level, this represents the Address of the actor
+  bytes id = 1;
+  // heights: the list of heights when the infractions occurred
+  repeated uint64 heights = 2;
+}
+
+// CommitteesData is a list of essential information about the committee
+message CommitteesData {
+  repeated CommitteeData list = 1;
+}
+
+// CommitteeData is current status information about the current status of the Committee
+message CommitteeData {
+  // chain_id: is the unique identifier of the chain and the committee of Validators responsible for it
+  uint64 chain_id = 1; // @gotags: json:"chainID"
+  // last_updated_height: is the Canopy height included in the most recently processed Certificate Results transaction
+  // This protects against historical committee attacks and ensures sequentiality among committees
+  uint64 last_root_height_updated = 2; // @gotags: json:"lastRootHeightUpdated"
+  // last_chain_height_updated: is the 3rd party chain height included in the most recent processed Certificate Results
+  // transaction. This protects against reformatting the replay attacks
+  uint64 last_chain_height_updated = 3; // @gotags: json:"lastChainHeightUpdated"
+  // payment_percents: a list of recipients and the percentage of rewards they will receive, distributed at the end of
+  // the block
+  repeated PaymentPercents  payment_percents = 4; // @gotags: json:"paymentPercents"
+  // number_of_samples: the total count of processed Certificate Result Transactions, used to dilute reward percentages
+  // accurately
+  uint64 number_of_samples = 5; // @gotags: json:"numberOfSamples"
+}

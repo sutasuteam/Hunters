@@ -1,0 +1,6 @@
+{
+    "port": 8080,
+    "ignore": "node_modules,cmd,public/uploads,uploads,.git,plugin,store,p2p",
+    "open": true,
+    "browser": "chrome"
+  }
