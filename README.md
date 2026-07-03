@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://sutasuteam.github.io/Hunters/Logo/Hunters.png" width="220" alt="Hunters Logo">
+  <img src="Logo/Hunters.png" width="180" alt="Hunters Logo">
 </p>
 
 <h1 align="center">Hunters</h1>
