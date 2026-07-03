@@ -1914,73 +1914,131 @@ catch(err){
 }
 
 }
-
 async function buyNFT(tokenId, postId){
 
 console.log("BUY NFT DIPANGGIL");
 console.log("token =", tokenId);
 console.log("postId =", postId);
-console.log("canopyAddress =", canopyAddress);
 
 try{
 
+    // ===========================
+    // Ambil wallet ETH yang login
+    // ===========================
+
+    const ethAddress =
+        localStorage.getItem("hunter_logged_in");
+
+    if(!ethAddress){
+
+        alert("Please connect wallet first.");
+
+        return;
+
+    }
+
+    // ===========================
+    // Ambil profile terbaru
+    // ===========================
+
+    const profileRes =
+        await fetch(
+            `http://localhost:3001/api/user/${ethAddress}`
+        );
+
+    const profile =
+        await profileRes.json();
+
+    if(
+        !profile.success ||
+        !profile.user
+    ){
+
+        alert("User profile not found.");
+
+        return;
+
+    }
+
     const buyer =
-        canopyAddress ||
-        "28f0349fceaac2df4fc4e37b5e2bbd46e688d684";
+        profile.user.canopyAddress;
 
-    const res = await fetch(
-        "http://localhost:3001/api/buy-nft",
-        {
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
+    console.log("Buyer =", buyer);
 
-                postId: postId,
-                tokenId: tokenId,
-                buyer: buyer
+    // ===========================
+    // Buy NFT
+    // ===========================
 
-            })
-        }
-    );
+    const res =
+        await fetch(
+            "http://localhost:3001/api/buy-nft",
+            {
+                method:"POST",
 
-    console.log("STATUS =",res.status);
+                headers:{
+                    "Content-Type":"application/json"
+                },
 
-    const result = await res.json();
+                body:JSON.stringify({
+
+                    postId: postId,
+
+                    tokenId: tokenId,
+
+                    buyer: buyer
+
+                })
+
+            }
+        );
+
+    console.log("STATUS =", res.status);
+
+    const result =
+        await res.json();
 
     console.log(result);
 
     if(!res.ok){
 
-        alert(result.error || "Buy NFT gagal");
+        alert(
+
+            result.error ||
+            "Buy NFT gagal"
+
+        );
+
         return;
 
     }
 
     if(result.success || result.status==="success"){
 
-        // update data lokal
         const post =
             posts.find(
-                p=>p.id===postId
+                p => p.id === postId
             );
 
         if(post && post.nft){
 
-            post.nft.bought=true;
+            post.nft.bought = true;
 
         }
 
-        // simpan status bought
         await fetch(
-            "http://localhost:3001/api/posts/"+postId+"/bought",
+
+            "http://localhost:3001/api/posts/" + postId + "/bought",
+
             {
                 method:"PUT"
             }
+
         );
 
-        renderFeed(posts,"feed-list");
+        renderFeed(
+            posts,
+            "feed-list"
+        );
 
         alert("NFT berhasil dibeli!");
 
@@ -1989,12 +2047,12 @@ try{
 }catch(err){
 
     console.error(err);
+
     alert(err.message);
 
 }
 
 }
-
 
 function closeCompleteProfile(){
 
@@ -2069,7 +2127,7 @@ let selectedToken = null;
 //   }
 // );
 // }
-let walletNFTs = [];
+
 
 function renderWalletNFTs(){
 
@@ -2157,6 +2215,47 @@ grid.appendChild(card);
 
 });
 }
+
+let walletNFTs = [];
+
+async function loadWalletNFTs() {
+
+if (!canopyAddress) {
+    walletNFTs = [];
+    renderWalletNFTs();
+    return;
+}
+
+try {
+
+    const res = await fetch(
+        `http://localhost:3001/api/wallet-nfts?owner=${canopyAddress}`
+    );
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        throw new Error(data.error || "Failed load NFT");
+    }
+
+    walletNFTs = data.nfts || [];
+
+    console.log("Wallet NFTs:", walletNFTs);
+
+    renderWalletNFTs();
+
+} catch (err) {
+
+    console.error(err);
+
+    walletNFTs = [];
+
+    renderWalletNFTs();
+
+}
+
+}
+
 
 let userTokens = [];
 
@@ -2694,7 +2793,27 @@ function showTokenCreate(){document.getElementById('token-modal').classList.remo
 function closeModal(id){document.getElementById(id).classList.add('hidden')}
 
 
+function showTokenCreate() {
 
+const ethAddress = localStorage.getItem("hunter_logged_in");
+
+if (!ethAddress) {
+    alert("Connect wallet first.");
+    return;
+}
+
+document.getElementById("tok-name").value = "";
+document.getElementById("tok-tick").value = "";
+document.getElementById("tok-supply").value = "";
+document.getElementById("tokenDescription").value = "";
+
+document.getElementById("tok-logo").value = "";
+document.getElementById("tok-logo-preview").src = "Logo/Hunters.png";
+
+document.getElementById("token-modal").classList.remove("hidden");
+
+loadTokenFee();
+}
 
 
 function selectNFT(
@@ -3452,6 +3571,9 @@ updateWalletUI(
 if(user.canopyAddress){
     canopyAddress = user.canopyAddress;
 }
+
+
+
 }catch(err){
 
   loadWhoToFollow();
@@ -4064,7 +4186,7 @@ el.innerHTML = `
 
 // buy nft 
 let currentWallet =
-"28f0349fceaac2df4fc4e37b5e2bbd46e688d684";
+"fb87037a9e79c2ef7dce36d4256bf94628f2b559";
 
 
 function updateFollowingCount(){

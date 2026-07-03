@@ -5,6 +5,7 @@ go 1.25
 require (
 	github.com/drand/kyber v1.3.2
 	github.com/drand/kyber-bls12381 v0.3.4
+	github.com/joho/godotenv v1.5.1
 	google.golang.org/protobuf v1.36.6
 )
 

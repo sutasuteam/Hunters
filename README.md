@@ -82,6 +82,15 @@ Current plugin interactions include:
 - Asset transfers
 - On-chain profile operations
 
+TransactionTypeUrls: []string{
+    "type.googleapis.com/types.MessageSend",
+    "type.googleapis.com/types.MessageMintNFT",
+    "type.googleapis.com/types.MessageSetStake",
+    "type.googleapis.com/types.MessageSendToken",
+    "type.googleapis.com/types.MessageLikePost",
+},
+
+
 These transactions are executed through the Go plugin and submitted to the local Canopy chain.
 
 ---
@@ -121,7 +130,7 @@ The project extends the template by adding:
 ## 1. Start Canopy
 
 ```bash
-go run ./cmd/cli start
+./canopy start
 ```
 
 ---
@@ -158,7 +167,16 @@ npm run dev
 
 ---
 
-## 4. Open Hunters
+## 4. Edit ENV
+
+```
+Adjust data validation in ENV
+```
+
+---
+
+
+## 5. Open Hunters
 
 ```
 http://127.0.0.1:8080/

@@ -11,7 +11,7 @@ import (
 	"os"
 	"strconv"
 	"time"
-
+"github.com/joho/godotenv"
 "github.com/canopy-network/go-plugin/contract"
 "github.com/canopy-network/go-plugin/crypto"
 	"google.golang.org/protobuf/proto"
@@ -193,7 +193,9 @@ func findBalance(
 
 
 func main() {
-
+	godotenv.Load()
+	fmt.Println("CANOPY_SIGNER_ADDRESS =", os.Getenv("CANOPY_SIGNER_ADDRESS"))
+    fmt.Println("CANOPY_PASSWORD =", os.Getenv("CANOPY_PASSWORD"))
 	http.Handle("/", http.FileServer(http.Dir("./public")))
 
 	fmt.Println("========== MINT REQUEST ==========")

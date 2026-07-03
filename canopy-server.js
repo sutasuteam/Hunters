@@ -25,7 +25,7 @@ path.join(__dirname,"data","users.json");
 
 const SIGNER_MINT_URL = "http://127.0.0.1:8081/mint";
 const SIGNER_BUY_URL  = "http://127.0.0.1:8081/buy";
-
+const SIGNER_ADDRESS = process.env.CANOPY_SIGNER_ADDRESS;
 
 const app = express();
 
@@ -60,7 +60,12 @@ app.post("/api/buy-nft", async (req, res) => {
 
   try {
 
-      const { postId } = req.body;
+    const {
+
+      postId,
+      buyer
+  
+  } = req.body;
 
       if (!postId) {
           return res.status(400).json({
@@ -99,23 +104,21 @@ app.post("/api/buy-nft", async (req, res) => {
 
       const payload = {
 
-          tokenId: post.nft.tokenId,
-
-          name: post.nft.name,
-
-          image: `${BASE_URL}/${post.nft.image}`,
-
-          metadata: JSON.stringify({
-
-              postId: post.id,
-
-              owner: post.owner,
-
-              nft: post.nft
-
-          })
-
-      };
+        creator: SIGNER_ADDRESS,
+    
+        tokenId: post.nft.tokenId,
+    
+        name: post.nft.name,
+    
+        image: `${BASE_URL}/${post.nft.image}`,
+    
+        metadata: JSON.stringify({
+            postId: post.id,
+            owner: post.owner,
+            nft: post.nft
+        })
+    
+    };
 
       console.log("SEND TO SIGNER");
       console.log(payload);
@@ -398,7 +401,7 @@ multer({
   storage
 });
 
-require("dotenv").config();
+
 
 const CANOPY_EXE =
 process.env.CANOPY_EXE;
